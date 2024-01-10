@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using CreativeSpore.SuperTilemapEditor;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
@@ -132,7 +133,8 @@ public class Enemy : MonoBehaviour
                 Attack();
             } else
             {
-                _direction = enemyToPlayer.normalized;
+                GetComponent<PathfindingBehaviour>().FollowPlayer();
+                //_direction = enemyToPlayer.normalized;
             }
         }
         else
