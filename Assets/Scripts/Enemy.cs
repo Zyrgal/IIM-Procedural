@@ -248,14 +248,14 @@ public class Enemy : MonoBehaviour
             return;
         _lastHitTime = Time.time;
 
-        life -= 1;
+        life -= (attack != null ? attack.damages : 1);
         if (life <= 0)
         {
             SetState(STATE.DEAD);
         }
         else
         {
-            if (attack != null)
+            if (attack != null && attack.knockbackDuration > 0.0f)
             {
                 StartCoroutine(ApplyKnockBackCoroutine(attack.knockbackDuration, attack.transform.right * attack.knockbackSpeed));
             }
