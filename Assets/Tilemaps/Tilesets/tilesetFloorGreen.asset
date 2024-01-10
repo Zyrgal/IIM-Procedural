@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0d98f5be51926f46bc797504da5ad22, type: 3}
-  m_Name: tilesetFloor
+  m_Name: tilesetFloorGreen
   m_EditorClassIdentifier: 
-  AtlasTexture: {fileID: 2800000, guid: a0426054a75cf414e8d43607d1129b03, type: 3}
+  AtlasTexture: {fileID: 2800000, guid: d50f42d488f0ba64b95cbc973a2c6ce4, type: 3}
   TilePxSize: {x: 32, y: 32}
   SliceOffset: {x: 0, y: 0}
   SlicePadding: {x: 0, y: 0}
@@ -23,9 +23,7 @@ MonoBehaviour:
   m_tileViews: []
   m_tilesetWidth: 8
   m_tilesetHeight: 32
-  m_brushes:
-  - Id: 1
-    BrushAsset: {fileID: 11400000, guid: 0095efc1fbc69f344a0eff229d2d2b87, type: 2}
+  m_brushes: []
   m_tiles:
   - uv:
       serializedVersion: 2
@@ -4937,6 +4935,5 @@ MonoBehaviour:
   - 
   - 
   m_brushGroupAutotilingMatrix: 01000000060000000600000008000000100000002000000040000000800000000001000000020000000400000008000000100000002000000040000000800000000001000000020000000400000008000000100000002000000040000000800000000001000000020000000400000008000000100000002000000040
-  m_brushTypeMaskOptions:
-  - BrushFortySeven
+  m_brushTypeMaskOptions: []
   m_brushTypeMask: -1
