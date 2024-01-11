@@ -133,6 +133,12 @@ public class Player : MonoBehaviour
 
     public void DashInput()
     {
+
+        if (_state == STATE.DEAD)
+        {
+            return;
+        }
+
         if (currentDashCooldown > 0)
         {
             currentDashCooldown -= Time.deltaTime;
