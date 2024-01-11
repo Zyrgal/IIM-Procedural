@@ -45,20 +45,25 @@ namespace CreativeSpore.SuperTilemapEditor
 
         void Update()
         {
+
+#if UNITY_EDITOR
+            DebugDrawPath();
+#endif
+        }
+
+        public void FollowPlayer()
+        {
             // compute path to destination
-            if(Input.GetMouseButtonDown(0))
+            m_targetPosition = Player.Instance.transform.position;
+            switch (ComputeMode)
             {
-                m_targetPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-                switch(ComputeMode)
-                { 
-                    case eComputeMode.Asynchronous:
-                        StopAllCoroutines();
-                        StartCoroutine(UpdatePathAsync(transform.position, m_targetPosition, AsyncCoroutineIterations));
-                        break;
-                    case eComputeMode.Synchronous:
-                        UpdatePathSync(transform.position, m_targetPosition);
-                        break;
-                }
+                case eComputeMode.Asynchronous:
+                    StopAllCoroutines();
+                    StartCoroutine(UpdatePathAsync(transform.position, m_targetPosition, AsyncCoroutineIterations));
+                    break;
+                case eComputeMode.Synchronous:
+                    UpdatePathSync(transform.position, m_targetPosition);
+                    break;
             }
 
             //Move to destination
@@ -72,11 +77,9 @@ namespace CreativeSpore.SuperTilemapEditor
                     m_curNode = m_curNode.Next;
                 transform.position += dir.normalized * MovingSpeed * Time.deltaTime;
             }
-
-#if UNITY_EDITOR
-            DebugDrawPath();
-#endif
         }
+
+
 
         void DebugDrawPath()
         {

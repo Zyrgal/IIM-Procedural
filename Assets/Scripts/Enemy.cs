@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using CreativeSpore.SuperTilemapEditor;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 
 /// <summary>
@@ -124,15 +126,19 @@ public class Enemy : MonoBehaviour
     /// </summary>
     private void UpdateAI()
     {
+        Vector2 enemyToPlayer = (Player.Instance.transform.position - transform.position);
+
+        float angleToTarget = Mathf.Atan2(enemyToPlayer.y, enemyToPlayer.x) * Mathf.Rad2Deg;
+        _body.rotation = angleToTarget;
+
         if (CanMove() && Player.Instance.Room == _room)
         {
-            Vector2 enemyToPlayer = (Player.Instance.transform.position - transform.position);
-            if(enemyToPlayer.magnitude < attackDistance)
+            if (enemyToPlayer.magnitude < attackDistance)
             {
                 Attack();
             } else
             {
-                _direction = enemyToPlayer.normalized;
+                GetComponent<PathfindingBehaviour>().FollowPlayer();
             }
         }
         else
@@ -234,9 +240,14 @@ public class Enemy : MonoBehaviour
         if (attackPrefab == null)
             return;
 
+        Vector2 directionToShoot = (Player.Instance.transform.position - transform.position);
+        float angle = Vector3.Angle(Vector3.right, directionToShoot);
+        if (Player.Instance.transform.position.y < transform.position.y) angle *= -1;
+        Quaternion bulletRotation = Quaternion.AngleAxis(angle, Vector3.forward);
+
         // transform used for spawn is attackSpawnPoint.transform if attackSpawnPoint is not null. Else it's transform.
-        Transform spawnTransform = attackSpawnPoint ? attackSpawnPoint.transform : transform;
-        GameObject.Instantiate(attackPrefab, spawnTransform.position, spawnTransform.rotation);
+        //Transform spawnTransform = attackSpawnPoint ? attackSpawnPoint.transform : transform;
+        GameObject.Instantiate(attackPrefab, attackSpawnPoint.transform.position, bulletRotation);
     }
 
     /// <summary>

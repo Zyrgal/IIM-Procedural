@@ -11,7 +11,6 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Rigidbody2D))]
 public class Player : MonoBehaviour
 {
-
     public static Player Instance = null;
 
     [System.Serializable]
@@ -81,6 +80,9 @@ public class Player : MonoBehaviour
 
     // Attack attributes
     [Header("Attack")]
+    [SerializeField] int baseDamage = 1;
+    public Alterable<int> CurrentDamage { get; private set; }
+
     public GameObject attackPrefab = null;
     public GameObject attackSpawnPoint = null;
     public float attackCooldown = 0.3f;
@@ -114,6 +116,7 @@ public class Player : MonoBehaviour
     private void Start()
     {
         SetState(STATE.IDLE);
+        CurrentDamage = new Alterable<int>(baseDamage);
     }
 
     private void Update()
@@ -237,8 +240,8 @@ public class Player : MonoBehaviour
         switch (_state)
         {
             case STATE.ATTACKING:
-                SpawnAttackPrefab();
-                SetState(STATE.IDLE);
+                //SpawnAttackPrefab();
+                //SetState(STATE.IDLE);
                 break;
             default: break;
         }
@@ -349,6 +352,7 @@ public class Player : MonoBehaviour
             return;
         lastAttackTime = Time.time;
         SetState(STATE.ATTACKING);
+        SpawnAttackPrefab();
     }
 
     /// <summary>
@@ -361,7 +365,9 @@ public class Player : MonoBehaviour
 
         // transform used for spawn is attackSpawnPoint.transform if attackSpawnPoint is not null. Else it's transform.
         Transform spawnTransform = attackSpawnPoint ? attackSpawnPoint.transform : transform;
-        GameObject.Instantiate(attackPrefab, spawnTransform.position, spawnTransform.rotation);
+        GameObject instance = GameObject.Instantiate(attackPrefab, spawnTransform.position, spawnTransform.rotation);
+        instance.GetComponent<Attack>().damages = CurrentDamage.CalculValue();
+        SetState(STATE.IDLE);
     }
 
     /// <summary>

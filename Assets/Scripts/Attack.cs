@@ -10,18 +10,34 @@ using UnityEngine;
 public class Attack : MonoBehaviour {
 
     public int damages = 1;
-	public bool hasInfiniteLifetime = false;
+    public bool isRangeAttack = false;
+	[ShowIf("isRangeAttack")]
+	public float bulletSpeed = 1f;
+
+    public bool hasInfiniteLifetime = false;
 	[HideIf("hasInfiniteLifetime")]
     public float lifetime = 0.3f;
     public float knockbackSpeed = 3;
     public float knockbackDuration = 0.5f;
 	public LayerMask destroyOnHit;
 
+	private Rigidbody2D rb;
+
 	[System.NonSerialized]
     public GameObject owner;
 	
+	void Start()
+	{
+		rb = GetComponent<Rigidbody2D>();
+	}
+
 	void Update () {
-		if (hasInfiniteLifetime)
+        if (isRangeAttack)
+        {
+            rb.velocity = transform.right * bulletSpeed;
+        }
+
+        if (hasInfiniteLifetime)
 			return;
 
 		lifetime -= Time.deltaTime;

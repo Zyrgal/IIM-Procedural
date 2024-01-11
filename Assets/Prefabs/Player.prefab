@@ -266,8 +266,9 @@ MonoBehaviour:
     acceleration: 12
     friction: 12
   dashReadyImage: {fileID: 0}
-  dashDuration: 0.03
-  dashForce: 50
+  dashDuration: 0.1
+  dashForce: 30
+  baseDamage: 1
   attackPrefab: {fileID: 2185964762067344080, guid: fedea07bedcd0dc4b8633fc878bfdc59,
     type: 3}
   attackSpawnPoint: {fileID: 3061304261252655527}
