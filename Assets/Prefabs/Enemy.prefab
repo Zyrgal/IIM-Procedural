@@ -354,7 +354,7 @@ MonoBehaviour:
     type: 3}
   attackSpawnPoint: {fileID: 4766563018300211270}
   attackWarmUp: 0.5
-  attackDistance: 0.9
+  attackDistance: 3
   attackCooldown: 0.5
   orientation: 1
 --- !u!210 &1940373930646248325
