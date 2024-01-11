@@ -230,7 +230,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &3061304262239656674
 MonoBehaviour:
@@ -261,6 +261,13 @@ MonoBehaviour:
     speedMax: 2
     acceleration: 12
     friction: 12
+  dashMovement:
+    speedMax: 20
+    acceleration: 12
+    friction: 12
+  dashReadyImage: {fileID: 0}
+  dashDuration: 0.03
+  dashForce: 50
   attackPrefab: {fileID: 2185964762067344080, guid: fedea07bedcd0dc4b8633fc878bfdc59,
     type: 3}
   attackSpawnPoint: {fileID: 3061304261252655527}
