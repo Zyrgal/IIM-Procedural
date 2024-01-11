@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static Attack;
 
 /// <summary>
 /// Player component. Manages inputs, character states and associated game flow.
@@ -79,10 +81,13 @@ public class Player : MonoBehaviour
     //private bool canDash => currentDashCooldown < 0 ;
 
     // Attack attributes
-    [Header("Attack")]
+    [Header("Attack"),Space(10)]
     [SerializeField] int baseDamage = 1;
+    [SerializeField] float baseRange = 1;
     public Alterable<int> CurrentDamage { get; private set; }
+    public Alterable<float> CurrentRange { get; private set; }
 
+    private Attack attackComponent;
     public GameObject attackPrefab = null;
     public GameObject attackSpawnPoint = null;
     public float attackCooldown = 0.3f;
@@ -110,6 +115,7 @@ public class Player : MonoBehaviour
     {
         Instance = this;
         _body = GetComponent<Rigidbody2D>();
+        attackComponent = GetComponent<Attack>();
         GetComponentsInChildren<SpriteRenderer>(true, _spriteRenderers);
     }
 
@@ -117,6 +123,7 @@ public class Player : MonoBehaviour
     {
         SetState(STATE.IDLE);
         CurrentDamage = new Alterable<int>(baseDamage);
+        CurrentRange = new Alterable<float>(baseRange);
     }
 
     private void Update()
@@ -366,7 +373,7 @@ public class Player : MonoBehaviour
         // transform used for spawn is attackSpawnPoint.transform if attackSpawnPoint is not null. Else it's transform.
         Transform spawnTransform = attackSpawnPoint ? attackSpawnPoint.transform : transform;
         GameObject instance = GameObject.Instantiate(attackPrefab, spawnTransform.position, spawnTransform.rotation);
-        instance.GetComponent<Attack>().damages = CurrentDamage.CalculValue();
+        instance.GetComponent<Attack>().attackData.damage = CurrentDamage.CalculValue();
         SetState(STATE.IDLE);
     }
 
@@ -388,7 +395,7 @@ public class Player : MonoBehaviour
             return;
         _lastHitTime = Time.time;
 
-        life -= (attack != null ? attack.damages : 1);
+        life -= (attack != null ? attack.attackData.damage : 1);
         if (life <= 0)
         {
             SetState(STATE.DEAD);
@@ -500,9 +507,28 @@ public class Player : MonoBehaviour
     {
         if (((1 << collision.gameObject.layer) & hitLayers) != 0)
         {
-            // Collided with hitbox
             Attack attack = collision.gameObject.GetComponent<Attack>();
-            ApplyHit(attack);
+
+            if (_state == STATE.DASHING)
+            {
+                if (attack.attackData.attackType == AttackType.ABSORBABLE)
+                {
+                    if (attack.attackData.attackBonusType == AttackBonusType.DAMAGE)
+                    {
+                        CurrentDamage.AddTransformator(f => f * 2, 100);
+                    }
+                    else if(attack.attackData.attackBonusType == AttackBonusType.RANGE)
+                    {
+                        CurrentRange.AddTransformator(f => f * 2, 100);
+                    }
+                }
+            }
+            else
+            {
+                // Collided with hitbox
+                
+                ApplyHit(attack);
+            }
         }
     }
 }

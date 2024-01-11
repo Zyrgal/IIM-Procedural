@@ -259,7 +259,7 @@ public class Enemy : MonoBehaviour
             return;
         _lastHitTime = Time.time;
 
-        life -= (attack != null ? attack.damages : 1);
+        life -= (attack != null ? attack.attackData.damage : 1);
         if (life <= 0)
         {
             SetState(STATE.DEAD);
