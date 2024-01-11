@@ -1,13 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
-
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 /// <summary>
 /// Player component. Manages inputs, character states and associated game flow.
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
-public class Player : MonoBehaviour {
+public class Player : MonoBehaviour
+{
 
     public static Player Instance = null;
 
@@ -34,6 +37,7 @@ public class Player : MonoBehaviour {
         ATTACKING = 1,
         STUNNED = 2,
         DEAD = 3,
+        DASHING = 4,
     }
 
     // Life and hit related attributes
@@ -55,10 +59,25 @@ public class Player : MonoBehaviour {
     [Header("Movement")]
     public MovementParameters defaultMovement = new MovementParameters();
     public MovementParameters stunnedMovement = new MovementParameters();
+    public MovementParameters dashMovement = new MovementParameters();
 
     private Rigidbody2D _body = null;
     private Vector2 _direction = Vector2.zero;
     private MovementParameters _currentMovement = null;
+
+    [Space(10)]
+
+    [Header("Dash")]
+    [SerializeField] Image dashReadyImage;
+    private bool isDashing = false;
+    [SerializeField] private float dashDuration = 0.03f;
+    private float currentDashTimer = 0f;
+    [SerializeField] private float dashForce = 50;
+    private float dashCooldown = 1f;
+    private float currentDashCooldown = 1f;
+    private bool canDash = true;
+
+    //private bool canDash => currentDashCooldown < 0 ;
 
     // Attack attributes
     [Header("Attack")]
@@ -81,11 +100,12 @@ public class Player : MonoBehaviour {
     private int _keyCount;
     public int KeyCount { get { return _keyCount; } set { _keyCount = value; } }
 
-	// Dungeon position
-	private Room _room = null;
-	public Room Room { get { return _room; } }
+    // Dungeon position
+    private Room _room = null;
+    public Room Room { get { return _room; } }
 
-	private void Awake () {
+    private void Awake()
+    {
         Instance = this;
         _body = GetComponent<Rigidbody2D>();
         GetComponentsInChildren<SpriteRenderer>(true, _spriteRenderers);
@@ -96,7 +116,10 @@ public class Player : MonoBehaviour {
         SetState(STATE.IDLE);
     }
 
-    private void Update () {
+    private void Update()
+    {
+        DashInput();
+        UpdateDashReadyVisual();
         UpdateState();
         UpdateInputs();
         UpdateRoom();
@@ -105,22 +128,66 @@ public class Player : MonoBehaviour {
     private void FixedUpdate()
     {
         FixedUpdateMovement();
-	}
+        UpdateDashState();
+    }
+
+    public void DashInput()
+    {
+
+        if (_state == STATE.DEAD)
+        {
+            return;
+        }
+
+        if (currentDashCooldown > 0)
+        {
+            currentDashCooldown -= Time.deltaTime;
+            return;
+        }
+        else
+        {
+            canDash = true;
+        }
+
+        //Ne pas mettre les inputs dans le fixUpdate, sinon les inputs ne seront pas bien lu
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+        {
+            canDash = false;
+            currentDashCooldown = dashCooldown;
+            SetState(STATE.DASHING);
+            isDashing = true;
+            currentDashTimer = dashDuration;
+        }
+    }
+
+    private void UpdateDashReadyVisual()
+    {
+        if (canDash)
+        {
+            dashReadyImage.color = Color.green;
+        }
+        else
+        {
+            dashReadyImage.color = Color.red;
+        }
+    }
 
     /// <summary>
     /// Updates any room related behaviours. By default, move from one room to another when reaching 
     /// </summary>
 	private void UpdateRoom()
-	{
+    {
         Bounds roomBounds = _room.GetWorldBounds();
         Room nextRoom = null;
-        if(transform.position.x > roomBounds.max.x)
+        if (transform.position.x > roomBounds.max.x)
         {
             nextRoom = _room.GetAdjacentRoom(Utils.ORIENTATION.EAST, transform.position);
-        } else if(transform.position.x < roomBounds.min.x)
+        }
+        else if (transform.position.x < roomBounds.min.x)
         {
             nextRoom = _room.GetAdjacentRoom(Utils.ORIENTATION.WEST, transform.position);
-        } else if (transform.position.y > roomBounds.max.y)
+        }
+        else if (transform.position.y > roomBounds.max.y)
         {
             nextRoom = _room.GetAdjacentRoom(Utils.ORIENTATION.NORTH, transform.position);
         }
@@ -129,16 +196,16 @@ public class Player : MonoBehaviour {
             nextRoom = _room.GetAdjacentRoom(Utils.ORIENTATION.SOUTH, transform.position);
         }
 
-		if(nextRoom != null)
-		{
+        if (nextRoom != null)
+        {
             EnterRoom(nextRoom);
-		}
-	}
+        }
+    }
 
-	/// <summary>
+    /// <summary>
     /// Updates inputs
     /// </summary>
-	private void UpdateInputs()
+    private void UpdateInputs()
     {
         if (CanMove())
         {
@@ -146,13 +213,18 @@ public class Player : MonoBehaviour {
             if (_direction.magnitude < controllerDeadZone)
             {
                 _direction = Vector2.zero;
-            } else {
+            }
+            else
+            {
                 _direction.Normalize();
             }
-            if(Input.GetButtonDown("Fire1")) {
+            if (Input.GetButtonDown("Fire1"))
+            {
                 Attack();
             }
-        } else {
+        }
+        else
+        {
             _direction = Vector2.zero;
         }
     }
@@ -162,13 +234,13 @@ public class Player : MonoBehaviour {
     /// </summary>
     private void UpdateState()
     {
-        switch(_state)
+        switch (_state)
         {
-			case STATE.ATTACKING:
-				SpawnAttackPrefab();
-				SetState(STATE.IDLE);
-				break;
-			default: break;
+            case STATE.ATTACKING:
+                SpawnAttackPrefab();
+                SetState(STATE.IDLE);
+                break;
+            default: break;
         }
     }
 
@@ -187,10 +259,15 @@ public class Player : MonoBehaviour {
         // Entering new state
         switch (_state)
         {
-            case STATE.STUNNED: _currentMovement = stunnedMovement; break;
-            case STATE.DEAD: 
+            case STATE.STUNNED:
+                _currentMovement = stunnedMovement;
+                break;
+            case STATE.DEAD:
                 EndBlink();
                 SetColor(deadColor);
+                break;
+            case STATE.DASHING:
+                _currentMovement = dashMovement;
                 break;
             default: _currentMovement = defaultMovement; break;
         }
@@ -202,25 +279,62 @@ public class Player : MonoBehaviour {
         }
     }
 
+    private void UpdateDashState()
+    {
+        if (isDashing)
+        {
+            float moveX = Input.GetAxisRaw("Horizontal");
+            float moveY = Input.GetAxisRaw("Vertical");
+            Vector2 moveDirection;
+
+            if (!Mathf.Approximately(moveX, 0) && !Mathf.Approximately(moveY, 0))
+            {
+                moveDirection = new Vector2(moveX, moveY).normalized;
+            }
+            else
+            {
+                moveDirection = transform.right;
+            }
+
+            _body.velocity = new Vector2(moveDirection.x * dashForce, moveDirection.y * dashForce);
+
+            //Debug.Log(Time.frameCount + " time = " + Time.time + " currentDashTimer " + currentDashTimer);
+
+            currentDashTimer -= Time.deltaTime;
+
+            if (currentDashTimer <= 0)
+            {
+                isDashing = false;
+                //Ne pas changer l'ordre des 2 lignes du dessous. La state doit être set avant de clamp la vélocité car sinon il prend la valeur de la state Dash qui est bcp trop grande et le personnage va continuer de glisser
+                SetState(STATE.IDLE);
+                _body.velocity = Vector2.ClampMagnitude(_body.velocity, _currentMovement.speedMax);
+            }
+        }
+    }
 
     /// <summary>
     /// Updates velocity and frictions
     /// </summary>
     void FixedUpdateMovement()
     {
+
         if (_direction.magnitude > Mathf.Epsilon) // magnitude > 0
         {
             // If direction magnitude > 0, Accelerate in direction, then clamp velocity to max speed. Do not apply friction if character is moving toward a direction.
             _body.velocity += _direction * _currentMovement.acceleration * Time.fixedDeltaTime;
             _body.velocity = Vector2.ClampMagnitude(_body.velocity, _currentMovement.speedMax);
             transform.eulerAngles = new Vector3(0.0f, 0.0f, ComputeOrientationAngle(_direction));
-        } else {
+        }
+        else
+        {
             // If direction magnitude == 0, Apply friction
             float frictionMagnitude = _currentMovement.friction * Time.fixedDeltaTime;
             if (_body.velocity.magnitude > frictionMagnitude)
             {
                 _body.velocity -= _body.velocity.normalized * frictionMagnitude;
-            } else {
+            }
+            else
+            {
                 _body.velocity = Vector2.zero;
             }
         }
@@ -255,6 +369,15 @@ public class Player : MonoBehaviour {
     /// </summary>
     public void ApplyHit(Attack attack)
     {
+        if (_state == STATE.DASHING)
+        {
+            return;
+        }
+        else
+        {
+            Debug.Log(_state.ToString());
+        }
+
         if (Time.time - _lastHitTime < invincibilityDuration)
             return;
         _lastHitTime = Time.time;
@@ -263,7 +386,9 @@ public class Player : MonoBehaviour {
         if (life <= 0)
         {
             SetState(STATE.DEAD);
-        } else {
+        }
+        else
+        {
             if (attack != null && attack.knockbackDuration > 0.0f)
             {
                 StartCoroutine(ApplyKnockBackCoroutine(attack.knockbackDuration, attack.transform.right * attack.knockbackSpeed));
@@ -290,11 +415,11 @@ public class Player : MonoBehaviour {
     private IEnumerator BlinkCoroutine()
     {
         float invincibilityTimer = 0;
-        while(invincibilityTimer < invincibilityDuration)
+        while (invincibilityTimer < invincibilityDuration)
         {
             invincibilityTimer += Time.deltaTime;
             bool isVisible = ((int)(invincibilityTimer / invincibilityBlinkPeriod)) % 2 == 1;
-            foreach(SpriteRenderer spriteRenderer in _spriteRenderers)
+            foreach (SpriteRenderer spriteRenderer in _spriteRenderers)
             {
                 spriteRenderer.enabled = isVisible;
             }
@@ -336,7 +461,7 @@ public class Player : MonoBehaviour {
     private float ComputeOrientationAngle(Vector2 direction)
     {
         float angle = Vector2.SignedAngle(Vector2.right, direction);
-        switch(orientation)
+        switch (orientation)
         {
             case ORIENTATION.DPAD_8: return Utils.DiscreteAngle(angle, 45); // Only 0 45 90 135 180 225 270 315
             case ORIENTATION.DPAD_4: return Utils.DiscreteAngle(angle, 90); // Only 0 90 180 270
@@ -356,7 +481,7 @@ public class Player : MonoBehaviour {
     /// Called to enter a room
     /// </summary>
 	public void EnterRoom(Room room)
-	{
+    {
         Room previous = _room;
         _room = room;
         room.OnEnterRoom(previous);
@@ -367,7 +492,7 @@ public class Player : MonoBehaviour {
     /// </summary>
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if( ((1 << collision.gameObject.layer) & hitLayers) != 0 )
+        if (((1 << collision.gameObject.layer) & hitLayers) != 0)
         {
             // Collided with hitbox
             Attack attack = collision.gameObject.GetComponent<Attack>();
