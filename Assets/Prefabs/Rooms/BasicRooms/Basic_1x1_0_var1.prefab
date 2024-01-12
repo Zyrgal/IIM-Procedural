@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 1133512645011604072}
   - component: {fileID: 4452598050071473784}
   m_Layer: 0
-  m_Name: Basic_1x1_0_1
+  m_Name: Basic_1x1_0_var1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -156,7 +156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abd64e0034f05b44581a553bb498242e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isStartRoom: 1
+  isStartRoom: 0
   position: {x: 0, y: 0}
   size: {x: 1, y: 1}
 --- !u!50 &4452598050071473784
