@@ -37,16 +37,16 @@ namespace CreativeSpore.SuperTilemapEditor
         {
             m_owner = owner;
             m_tilemapGroup = tilemapGroup;
-            SetGridPos(idx >> 16, (int)(short)idx, m_owner.CellSize);
+            SetGridPos(tilemapGroup, idx >> 16, (int)(short)idx, m_owner.CellSize);
             //NOTE: calculate m_costFactor here using Tile parameters
             m_costFactor = 1f;
         }
 
-        public void SetGridPos(int gridX, int gridY, Vector2 cellSize)
+        public void SetGridPos(TilemapGroup tilemapGroup, int gridX, int gridY, Vector2 cellSize)
         {
             GridX = gridX;
             GridY = gridY;
-            Position = TilemapUtils.GetGridWorldPos(gridX, gridY, cellSize);
+            Position = tilemapGroup.transform.TransformPoint(TilemapUtils.GetGridLocalPos(gridX, gridY, cellSize));
             for (int y = -1, neighIdx = 0; y <= 1; ++y)
             {
                 for (int x = -1; x <= 1; ++x)
@@ -71,7 +71,7 @@ namespace CreativeSpore.SuperTilemapEditor
                 STETilemap tilemap = m_tilemapGroup[i];
                 if (tilemap && tilemap.ColliderType != eColliderType.None && tilemap.IsGridPositionInsideTilemap(GridX, GridY))
                 {
-                    Tile tile = tilemap.GetTile(tilemap.transform.InverseTransformPoint(Position)); // Use Position instead to allow tilemaps with offset different than 0, tilemap.GetTile(GridX, GridY);
+                    Tile tile = tilemap.GetTile(m_tilemapGroup.transform.InverseTransformPoint(Position)); // Use Position instead to allow tilemaps with offset different than 0, tilemap.GetTile(GridX, GridY);
                     isEmptyCell = false;
                     isBlocked = tile != null && tile.collData.type != eTileCollider.None;                    
                 }
@@ -305,7 +305,8 @@ namespace CreativeSpore.SuperTilemapEditor
 
         public MapTileNode GetMapTileNode( Vector2 position )
         {
-            return GetMapTileNode(BrushUtil.GetGridX(position, CellSize), BrushUtil.GetGridY(position, CellSize));
+            Vector3 localPosition = TilemapGroup.transform.InverseTransformPoint(position);
+            return GetMapTileNode(BrushUtil.GetGridX(localPosition, CellSize), BrushUtil.GetGridY(localPosition, CellSize));
         }
 
         /// <summary>
