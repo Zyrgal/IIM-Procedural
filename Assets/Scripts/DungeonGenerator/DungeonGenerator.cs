@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Collections;
 
 
 #if UNITY_EDITOR
@@ -40,6 +41,7 @@ public class DungeonGenerator : MonoBehaviour
             }
 
             CreateSecondaryPaths();
+            ApplyAdditionalRules();
 
             if (IsDungeonValid())
             {
@@ -62,29 +64,29 @@ public class DungeonGenerator : MonoBehaviour
         nodes.Add(startNode);
 
         CreatePath(startNode, PathType.Main, pathLength);
+
         nodes.Last().type = NodeType.End;
+        connections.First(e => e.fromNode.type == NodeType.End || e.toNode.type == NodeType.End).type = ConnectionType.NeedKey;
 
         return true;
     }
 
     private void CreateSecondaryPaths()
     {
-        // Implement the creation of secondary paths with obstacles and rewards along the main path
-        List<Node> mainPath = new List<Node>();
-        mainPath.AddRange(nodes.Where(e => e.type == NodeType.MainPath || e.type == NodeType.End));
+        List<Node> mainPath = nodes.Where(node => node.type == NodeType.MainPath || node.type == NodeType.End).ToList();
         int n = 0;
 
-        secondaryPathLength = new Vector2Int(2, Mathf.Max(mainPath.Count / 2, 4));
+        secondaryPathLength = new Vector2Int(2, Mathf.Max(mainPath.Count / 3, 4));
         numberOfSecondaryPaths = mainPath.Count / 2;
 
         while (n <= numberOfSecondaryPaths || mainPath.Count <= 0)
         {
             int pathLength = Random.Range(0, 2) == 0 ? 1 : Random.Range(secondaryPathLength.x, secondaryPathLength.y);
             Node originNode = mainPath[Random.Range(0, mainPath.Count)];
-            mainPath.Remove(originNode);
 
             CreatePath(originNode, PathType.Secondary, pathLength);
 
+            mainPath.Remove(originNode);
             n++;
         }
     }
@@ -115,16 +117,24 @@ public class DungeonGenerator : MonoBehaviour
             Node currentNode = new Node((int)newPosition.x, (int)newPosition.y, pathType == PathType.Main ? NodeType.MainPath : NodeType.Path);
             nodes.Add(currentNode);
 
-            Connection connection = new Connection(previousNode, currentNode, ConnectionType.Open);
-            connections.Add(connection);
+            foreach (var node in GetNeighboors(currentNode.Position))
+            {
+                Connection connection = new Connection(node, currentNode, ConnectionType.Open);
+                connections.Add(connection);
+            }
 
             previousNode = currentNode;
         }
     }
 
-    private void GenerateConnections()
+    private void ApplyAdditionalRules()
     {
+        foreach (var node in nodes)
+            if (HasEigthNeighboors(node.Position))
+                node.type = NodeType.Center;
 
+        nodes.RemoveAll(e => e.type == NodeType.Center);
+        connections.RemoveAll(e => e.fromNode.type == NodeType.Center || e.toNode.type == NodeType.Center);
     }
 
     private bool IsDungeonValid()
@@ -182,9 +192,26 @@ public class DungeonGenerator : MonoBehaviour
         return false;
     }
 
+    private bool HasEigthNeighboors(Vector2 position)
+    {
+        // Wip c'est pas bon
+        return nodes.Where(node => node.Position != position &&
+                                   Mathf.Abs(node.x - position.x) < 2 && 
+                                   Mathf.Abs(node.y - position.y) < 2).Count() == 8;
+    }
+
     private List<Node> GetNeighboors(Vector2 position)
     {
         return nodes.Where(e => Vector3.Distance(e.Position, position) == 1).ToList();
+    }
+
+    private List<Vector2> GetEmptyNeighboors(Vector2 position)
+    {
+        List<Vector2> emptySlots = new List<Vector2>();
+
+        // WIP
+
+        return emptySlots;
     }
 
     private Vector2 GetRandomDirection()
@@ -213,7 +240,7 @@ public class DungeonGenerator : MonoBehaviour
                     Gizmos.color = Color.blue;
                     break;
                 case NodeType.Path:
-                    Gizmos.color = Color.yellow;
+                    Gizmos.color = Color.magenta;
                     break;
                 case NodeType.End:
                     Gizmos.color = Color.red;
@@ -280,8 +307,8 @@ public enum NodeType
     MainPath,
     Path,
     End,
-    Obstacle,
-    Reward
+    Fusion,
+    Center,
 }
 
 public enum ConnectionType
