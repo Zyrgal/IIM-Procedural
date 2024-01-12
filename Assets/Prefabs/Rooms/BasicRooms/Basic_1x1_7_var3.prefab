@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 1133512645011604072}
   - component: {fileID: 4452598050071473784}
   m_Layer: 0
-  m_Name: DeadEnd_1x1_2_var3
+  m_Name: Basic_1x1_7_var3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
