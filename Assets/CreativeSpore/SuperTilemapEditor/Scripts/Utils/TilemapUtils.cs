@@ -86,7 +86,7 @@ namespace CreativeSpore.SuperTilemapEditor
             return tilemap.transform.TransformPoint(new Vector2((gridX + .5f) * tilemap.CellSize.x, (gridY + .5f) * tilemap.CellSize.y));
         }
 
-        static public Vector3 GetGridWorldPos(int gridX, int gridY, Vector2 cellSize)
+        static public Vector3 GetGridLocalPos(int gridX, int gridY, Vector2 cellSize)
         {
             return new Vector2((gridX + .5f) * cellSize.x, (gridY + .5f) * cellSize.y);
         }

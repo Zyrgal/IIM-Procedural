@@ -4,9 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
-//using DG.Tweening;
-using static UnityEngine.GraphicsBuffer;
-
 
 /// <summary>
 /// Enemy component. Manages inputs, character states and associated game flow.
@@ -64,6 +61,7 @@ public class Enemy : MonoBehaviour
     private Rigidbody2D _body = null;
     private Vector2 _direction = Vector2.zero;
     private MovementParameters _currentMovement = null;
+    private PathfindingBehaviour _pathfinding = null;
 
     // Attack attributes
     [Header("Attack")]
@@ -100,6 +98,7 @@ public class Enemy : MonoBehaviour
     private void Awake()
     {
         _body = GetComponent<Rigidbody2D>();
+        _pathfinding = GetComponent<PathfindingBehaviour>();
         GetComponentsInChildren<SpriteRenderer>(true, _spriteRenderers);
 		allEnemies.Add(this);
 	}
@@ -173,8 +172,16 @@ public class Enemy : MonoBehaviour
                 Attack();
             } else
             {
-                GetComponent<PathfindingBehaviour>().FollowPlayer();
-            }
+                if (_pathfinding != null)
+                {
+                    _pathfinding.ComputePath(Player.Instance.transform.position);
+                    _direction = _pathfinding.GetNextDirection();
+                }
+                else
+                {
+                    _direction = enemyToPlayer.normalized;
+                }
+            }    
         }
         else
         {
@@ -244,7 +251,7 @@ public class Enemy : MonoBehaviour
             // If direction magnitude > 0, Accelerate in direction, then clamp velocity to max speed. Do not apply friction if character is moving toward a direction.
             _body.velocity += _direction * _currentMovement.acceleration * Time.fixedDeltaTime;
             _body.velocity = Vector2.ClampMagnitude(_body.velocity, _currentMovement.speedMax);
-            transform.eulerAngles = new Vector3(0.0f, 0.0f, ComputeOrientationAngle(_direction));
+            //transform.eulerAngles = new Vector3(0.0f, 0.0f, ComputeOrientationAngle(_direction));
         }
         else {
             // If direction magnitude == 0, Apply friction
