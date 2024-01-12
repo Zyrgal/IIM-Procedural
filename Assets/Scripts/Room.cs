@@ -12,6 +12,12 @@ public class Room : MonoBehaviour {
 
     public bool isStartRoom = false;
 
+    [Header("Doors")]
+    public bool northDoor = true;
+    public bool southDoor = true;
+    public bool eastDoor = true;
+    public bool westDoor = true;
+
     // Position of the room in index coordinates. Coordinates {0,0} are the coordinates of the central room. Room {1,0} is on the right side of room {0,0}.
 	public Vector2Int position = Vector2Int.zero;
     // Size of the room in index coordinates. By default : {1,1}.
