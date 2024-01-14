@@ -17,13 +17,24 @@ public class DungeonGenerator : MonoBehaviour
     public int height = 10;
     public int maxAttempts = 5;
     public int nodeMaxAttempts = 5;
+    public Vector2 roomSize = new Vector2(11, 9);
 
-    private List<Node> nodes;
-    private List<Connection> connections;
+    [HideInInspector] public List<Node> nodes;
+    [HideInInspector] public List<Connection> connections;
+
+    [Header("Rooms")]
+    public List<Room> basicRooms;
+    public List<Room> deadEndRooms;
+    public List<Room> startRoom;
+    public List<Room> endRoom;
+    public List<Room> bigRooms;
+    public List<Room> keyRooms;
+    public List<Room> secretRooms;
 
     private void Start()
     {
         GenerateDungeon();
+        SpawnRooms();
     }
 
     public void GenerateDungeon()
@@ -227,8 +238,55 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
+    public void ClearRoom()
+    {
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            if (!Application.isPlaying)
+                DestroyImmediate(transform.GetChild(i).gameObject);
+            else
+                Destroy(transform.GetChild(i).gameObject);
+        }
+    }
+
+    public void SpawnRooms()
+    {
+        ClearRoom();
+
+        // Generate basic rooms
+        foreach (var node in nodes)
+        {
+            Room room = null;
+            switch (node.type)
+            {
+                case NodeType.Start:
+                    room = startRoom[Random.Range(0, startRoom.Count)];
+                    break;
+                case NodeType.End:
+                    room = endRoom[Random.Range(0, endRoom.Count)];
+                    break;
+                case NodeType.Fusion:
+                    room = basicRooms[Random.Range(0, basicRooms.Count)];
+                    break;
+                case NodeType.MainPath:
+                case NodeType.Path:
+                default:
+                    room = basicRooms[Random.Range(0, basicRooms.Count)];
+                    break;
+            }
+            room = Instantiate(room, node.Position * new Vector2(11, 9), Quaternion.identity);
+            room.transform.parent = transform;
+            room.position = new Vector2Int(11 * node.x, 9 * node.y);
+            room.size = new Vector2Int(11, 9);
+        }
+    }
+
     private void OnDrawGizmosSelected()
     {
+        Vector2 roomGizmoSize = new Vector2(5.5f, 4.5f);
+        float connectionGizmoSize = 0.5f;
+
+        // Room visuals
         foreach (var node in nodes)
         {
             switch (node.type)
@@ -240,15 +298,17 @@ public class DungeonGenerator : MonoBehaviour
                     Gizmos.color = Color.blue;
                     break;
                 case NodeType.Path:
-                    Gizmos.color = Color.magenta;
+                    Gizmos.color = Color.cyan;
                     break;
                 case NodeType.End:
                     Gizmos.color = Color.red;
                     break;
             }
-            Gizmos.DrawCube(node.Position * 2, Vector3.one);
+            Vector2 pos = node.Position * roomSize + roomSize / 2;
+            Gizmos.DrawCube(pos, roomGizmoSize);
         }
 
+        // Connection visuals
         foreach (var connection in connections)
         {
             switch (connection.type)
@@ -263,12 +323,20 @@ public class DungeonGenerator : MonoBehaviour
                     Gizmos.color = Color.blue;
                     break;
             }
-            Vector2 pos = connection.fromNode.Position + connection.toNode.Position;
-            Gizmos.DrawSphere(pos, 0.2f);
+            Vector2 pos = (connection.fromNode.Position + connection.toNode.Position) / 2 * roomSize + roomSize / 2;
+            Gizmos.DrawSphere(pos, connectionGizmoSize);
         }
+
+        // Generation limits
+        Gizmos.color = Color.black;
+        Gizmos.DrawCube(new Vector2(width / 2, height / 2) * roomSize, Vector2.one);
+        Gizmos.DrawCube(new Vector2(width / 2, -height / 2) * roomSize, Vector2.one);
+        Gizmos.DrawCube(new Vector2(-width / 2, height / 2) * roomSize, Vector2.one);
+        Gizmos.DrawCube(new Vector2(-width / 2, -height / 2) * roomSize, Vector2.one);
     }
 }
 
+#region Classes and enums
 [System.Serializable]
 public class Node
 {
@@ -324,6 +392,7 @@ public enum PathType
     Secondary,
     Other,
 }
+#endregion
 
 #if UNITY_EDITOR
 [CustomEditor(typeof(DungeonGenerator))]
@@ -331,14 +400,98 @@ public class DungeonGeneratorEditor : Editor
 {
     DungeonGenerator source => target as DungeonGenerator;
 
+    private void OnEnable()
+    {
+        LoadRooms();
+    }
+
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
 
         EditorGUILayout.Space();
-        if (GUILayout.Button("Generate"))
+        if (GUILayout.Button("Generate graph"))
         {
             source.GenerateDungeon();
+        }
+        if (GUILayout.Button("Clear graph"))
+        {
+            source.nodes = new List<Node>();
+            source.connections = new List<Connection>();
+        }
+        EditorGUILayout.Space();
+        if (GUILayout.Button("Generate layout from graph"))
+        {
+            source.SpawnRooms();
+        }
+        if (GUILayout.Button("Clear layout"))
+        {
+            source.ClearRoom();
+        }
+    }
+
+    void LoadRooms()
+    {
+        string pathBasic = "Assets/Prefabs/Rooms/BasicRooms";
+        source.basicRooms.Clear();
+        foreach (var guid in AssetDatabase.FindAssets("t:Prefab", new string[] { pathBasic }))
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            source.basicRooms.Add(AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<Room>());
+        }
+
+
+        string pathBig = "Assets/Prefabs/Rooms/BigRooms";
+        source.bigRooms.Clear();
+        foreach (var guid in AssetDatabase.FindAssets("t:Prefab", new string[] { pathBig }))
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            source.bigRooms.Add(AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<Room>());
+        }
+
+
+        string pathStart = "Assets/Prefabs/Rooms/StartRooms";
+        source.startRoom.Clear();
+        foreach (var guid in AssetDatabase.FindAssets("t:Prefab", new string[] { pathStart }))
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            source.startRoom.Add(AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<Room>());
+        }
+
+
+        string pathEnd = "Assets/Prefabs/Rooms/EndRooms";
+        source.endRoom.Clear();
+        foreach (var guid in AssetDatabase.FindAssets("t:Prefab", new string[] { pathEnd }))
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            source.endRoom.Add(AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<Room>());
+        }
+
+
+        string pathDeadEnd = "Assets/Prefabs/Rooms/DeadEndRooms";
+        source.deadEndRooms.Clear();
+        foreach (var guid in AssetDatabase.FindAssets("t:Prefab", new string[] { pathDeadEnd }))
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            source.deadEndRooms.Add(AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<Room>());
+        }
+
+
+        string pathKey = "Assets/Prefabs/Rooms/KeyRooms";
+        source.keyRooms.Clear();
+        foreach (var guid in AssetDatabase.FindAssets("t:Prefab", new string[] { pathKey }))
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            source.keyRooms.Add(AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<Room>());
+        }
+
+
+        string pathSecret = "Assets/Prefabs/Rooms/SecretRooms";
+        source.secretRooms.Clear();
+        foreach (var guid in AssetDatabase.FindAssets("t:Prefab", new string[] { pathSecret }))
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            source.secretRooms.Add(AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<Room>());
         }
     }
 }
