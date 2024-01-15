@@ -354,9 +354,13 @@ MonoBehaviour:
     type: 3}
   attackSpawnPoint: {fileID: 4766563018300211270}
   attackWarmUp: 1.5
-  attackDistance: 4
+  attackDistance: 3.5
   attackCooldown: 0.8
   orientation: 1
+  shotCount: 4
+  shotInterval: 0.8
+  timeBeforeThrowAttack: 3
+  fireRate: 5
 --- !u!210 &1940373930646248325
 SortingGroup:
   m_ObjectHideFlags: 0

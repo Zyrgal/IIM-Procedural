@@ -133,8 +133,7 @@ public class Enemy : MonoBehaviour
         elapsetimeSinceCanFire -= Time.deltaTime;
         _stateTimer += Time.deltaTime;
 
-        if (CanFire())
-            UpdateState();
+        //if (CanFire()) UpdateState();
         
         UpdateAI();
     }
@@ -142,7 +141,14 @@ public class Enemy : MonoBehaviour
     public bool CanFire()
     {
         elapsetimeSinceCanFire -= Time.deltaTime;
-        return ShootAvailable() && ShootStartTimePass();
+        return ShootAvailable() && IsInRange() && ShootStartTimePass();
+    }
+
+    private bool IsInRange()
+    {
+        Vector2 enemyToPlayer = (Player.Instance.transform.position - transform.position);
+
+        return enemyToPlayer.magnitude < attackDistance;
     }
 
     public bool ShootStartTimePass()
@@ -167,9 +173,13 @@ public class Enemy : MonoBehaviour
 
         if (CanMove() && Player.Instance.Room == _room)
         {
-            if (enemyToPlayer.magnitude < attackDistance)
+            if (IsInRange())
             {
-                Attack();
+                if (CanFire())
+                {
+                    Attack();
+                    UpdateState();
+                }
             } else
             {
                 if (_pathfinding != null)
@@ -200,7 +210,6 @@ public class Enemy : MonoBehaviour
         {
             case STATE.ATTACKING:
                 Fire();
-                SetState(STATE.IDLE);
 				break;
             default: break;
         }
@@ -272,9 +281,14 @@ public class Enemy : MonoBehaviour
     /// </summary>
     private void Attack()
     {
-        if (Time.time - lastAttackTime < attackCooldown)
+        //if (Time.time - lastAttackTime < attackCooldown) return;
+
+        if (!ShootAvailable() && !ShootStartTimePass())
             return;
-        lastAttackTime = Time.time;
+
+        lastFireTime = Time.time;
+
+        //lastAttackTime = Time.time;
         SetState(STATE.ATTACKING);
     }
 
@@ -311,6 +325,7 @@ public class Enemy : MonoBehaviour
         sequence.onComplete += () =>
         {
             sequence = null;
+            _state = STATE.IDLE;
         };
 
         for (int i = 0; i < shotCount; i++)
@@ -322,6 +337,7 @@ public class Enemy : MonoBehaviour
 
             sequence.AppendInterval(shotInterval);
         }
+
         sequence.Play();
 
         lastFireTime = Time.time;
