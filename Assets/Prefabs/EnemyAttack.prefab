@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2185964762067344108}
   - component: {fileID: 2185964762067344109}
   - component: {fileID: 1833291118246165548}
+  - component: {fileID: 2917944304035706097}
   m_Layer: 9
   m_Name: EnemyAttack
   m_TagString: Untagged
@@ -47,7 +48,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a64c3f37f25b7341976210bee531236, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damages: 1
   isRangeAttack: 1
   bulletSpeed: 3
   hasInfiniteLifetime: 0
@@ -181,3 +181,15 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &2917944304035706097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2185964762067344080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed21e2424f1e6744b998bce6034d07f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -1,9 +1,9 @@
 ﻿using CreativeSpore.SuperTilemapEditor;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
-
 
 /// <summary>
 /// Enemy component. Manages inputs, character states and associated game flow.
@@ -74,6 +74,17 @@ public class Enemy : MonoBehaviour
 
     private float lastAttackTime = float.MinValue;
 
+    [Header("Fire")]
+    [SerializeField] private int shotCount = 3;
+    [SerializeField] private float shotInterval = 0.8f;
+    [SerializeField] public float timeBeforeThrowAttack = 3f;
+    public float ElapsetimeSinceLastFire { get => Time.time - lastFireTime; }
+    private float elapsetimeSinceCanFire;
+    private float lastFireTime;
+    private Sequence sequence;
+    [SerializeField] private float fireRate = 2;
+    public float FireRate => Mathf.Max(fireRate, shotCount * shotInterval);
+
     // State attributes
     private STATE _state = STATE.IDLE;
 	private float _stateTimer = 0.0f;
@@ -90,12 +101,16 @@ public class Enemy : MonoBehaviour
         _pathfinding = GetComponent<PathfindingBehaviour>();
         GetComponentsInChildren<SpriteRenderer>(true, _spriteRenderers);
 		allEnemies.Add(this);
-
 	}
 
 	private void OnDestroy()
 	{
-		allEnemies.Remove(this);
+        if (sequence != null && sequence.IsPlaying())
+        {
+            sequence.Kill();
+        }
+
+        allEnemies.Remove(this);
 	}
 
 	private void Start()
@@ -108,13 +123,31 @@ public class Enemy : MonoBehaviour
 			}
 		}
 
-		SetState(STATE.IDLE);
+        elapsetimeSinceCanFire = timeBeforeThrowAttack;
+
+        SetState(STATE.IDLE);
     }
 
     private void Update()
     {
-        UpdateState();
+        elapsetimeSinceCanFire -= Time.deltaTime;
+        _stateTimer += Time.deltaTime;
+
+        if (CanFire())
+            UpdateState();
+        
         UpdateAI();
+    }
+
+    public bool CanFire()
+    {
+        elapsetimeSinceCanFire -= Time.deltaTime;
+        return ShootAvailable() && ShootStartTimePass();
+    }
+
+    public bool ShootStartTimePass()
+    {
+        return elapsetimeSinceCanFire < 0;
     }
 
     private void FixedUpdate()
@@ -161,19 +194,21 @@ public class Enemy : MonoBehaviour
     /// </summary>
     private void UpdateState()
     {
-		_stateTimer += Time.deltaTime;
+        //_stateTimer += Time.deltaTime;
 
-		switch (_state)
+        switch (_state)
         {
             case STATE.ATTACKING:
-				if(_stateTimer >= attackWarmUp)
-				{
-					SpawnAttackPrefab();
-					SetState(STATE.IDLE);
-				}
+                Fire();
+                SetState(STATE.IDLE);
 				break;
             default: break;
         }
+    }
+
+    public void ResetVariables()
+    {
+        elapsetimeSinceCanFire = timeBeforeThrowAttack;
     }
 
     /// <summary>
@@ -187,9 +222,11 @@ public class Enemy : MonoBehaviour
         //}
 
         _state = state;
-		_stateTimer = 0.0f;
-		// Enter new state
-		switch (_state)
+		//_stateTimer = 0.0f;
+        ResetVariables();
+
+        // Enter new state
+        switch (_state)
         {
             case STATE.STUNNED: _currentMovement = stunnedMovement; break;
             case STATE.DEAD: EndBlink(); Destroy(gameObject); break;
@@ -258,16 +295,48 @@ public class Enemy : MonoBehaviour
         //Transform spawnTransform = attackSpawnPoint ? attackSpawnPoint.transform : transform;
         GameObject.Instantiate(attackPrefab, attackSpawnPoint.transform.position, bulletRotation);
     }
+    public bool ShootAvailable()
+    {
+        return ElapsetimeSinceLastFire > FireRate;
+    }
+
+    public void Fire()
+    {
+        if (sequence != null && sequence.IsPlaying())
+        {
+            sequence.Kill();
+        }
+
+        sequence = DOTween.Sequence();
+        sequence.onComplete += () =>
+        {
+            sequence = null;
+        };
+
+        for (int i = 0; i < shotCount; i++)
+        {
+            sequence.AppendCallback(() =>
+            {
+                SpawnAttackPrefab();
+            });
+
+            sequence.AppendInterval(shotInterval);
+        }
+        sequence.Play();
+
+        lastFireTime = Time.time;
+    }
 
     /// <summary>
     /// Called when enemy touches a player attack's hitbox.
     /// </summary>
-    public void ApplyHit(Attack attack)
+    private void ApplyHit(Attack attack)
     {
         if (Time.time - _lastHitTime < invincibilityDuration)
             return;
         _lastHitTime = Time.time;
-        life -= (attack != null ? attack.attackData.damage : 1);
+
+        life -= (attack != null ? attack.damage : 1);
         if (life <= 0)
         {
             SetState(STATE.DEAD);
@@ -326,7 +395,6 @@ public class Enemy : MonoBehaviour
         }
         StopCoroutine(_blinkCoroutine);
         _blinkCoroutine = null;
-
     }
 
     /// <summary>

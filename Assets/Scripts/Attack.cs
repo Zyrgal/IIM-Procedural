@@ -10,30 +10,7 @@ using UnityEngine;
 /// </summary>
 public class Attack : MonoBehaviour {
 
-	public enum AttackType
-	{
-		NONE = 0,
-		ABSORBABLE = 1,
-	}
-
-	public enum AttackBonusType
-	{
-		DAMAGE,
-		RANGE,
-	}
-
-	public struct AttackData
-	{
-		public AttackType attackType;
-		public AttackBonusType attackBonusType;
-		public int damage;
-    }
-
-	public AttackData attackData;
-    public bool isRangeAttack = false;
-	[ShowIf("isRangeAttack")]
-	public float bulletSpeed = 1f;
-
+	public int damage;
     public bool hasInfiniteLifetime = false;
 	[HideIf("hasInfiniteLifetime")]
     public float lifetime = 0.3f;
@@ -41,33 +18,7 @@ public class Attack : MonoBehaviour {
     public float knockbackDuration = 0.5f;
 	public LayerMask destroyOnHit;
 
-	private Rigidbody2D rb;
-
-	[System.NonSerialized]
-    public GameObject owner;
-
-    void Start()
-	{
-        rb = GetComponent<Rigidbody2D>();
-        attackData.attackType = (AttackType)1;
-
-        if (isRangeAttack)
-		{
-            SetAttackBonusType();
-        }
-	}
-
-	private void SetAttackBonusType()
-	{
-        float rand = UnityEngine.Random.Range(0, System.Enum.GetValues(typeof(AttackBonusType)).Length);
-		attackData.attackBonusType = (AttackBonusType)rand;
-    }
-
 	void Update () {
-        if (isRangeAttack)
-        {
-            rb.velocity = transform.right * bulletSpeed;
-        }
 
         if (hasInfiniteLifetime)
 			return;

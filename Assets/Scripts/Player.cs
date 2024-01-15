@@ -373,7 +373,7 @@ public class Player : MonoBehaviour
         // transform used for spawn is attackSpawnPoint.transform if attackSpawnPoint is not null. Else it's transform.
         Transform spawnTransform = attackSpawnPoint ? attackSpawnPoint.transform : transform;
         GameObject instance = GameObject.Instantiate(attackPrefab, spawnTransform.position, spawnTransform.rotation);
-        instance.GetComponent<Attack>().attackData.damage = CurrentDamage.CalculValue();
+        instance.GetComponent<Attack>().damage = CurrentDamage.CalculValue();
         SetState(STATE.IDLE);
     }
 
@@ -395,7 +395,7 @@ public class Player : MonoBehaviour
             return;
         _lastHitTime = Time.time;
 
-        life -= (attack != null ? attack.attackData.damage : 1);
+        life -= (attack != null ? attack.damage : 1);
         if (life <= 0)
         {
             SetState(STATE.DEAD);
@@ -510,26 +510,36 @@ public class Player : MonoBehaviour
         if (((1 << collision.gameObject.layer) & hitLayers) != 0)
         {
             Attack attack = collision.gameObject.GetComponent<Attack>();
+            Bullet bulletComponent = collision.gameObject.GetComponent<Bullet>();
 
-            if (_state == STATE.DASHING)
+            if (bulletComponent == null)
             {
-                if (attack.attackData.attackType == AttackType.ABSORBABLE)
-                {
-                    if (attack.attackData.attackBonusType == AttackBonusType.DAMAGE)
-                    {
-                        CurrentDamage.AddTransformator(f => f * 2, 100);
-                    }
-                    else if(attack.attackData.attackBonusType == AttackBonusType.RANGE)
-                    {
-                        CurrentRange.AddTransformator(f => f * 2, 100);
-                    }
-                }
+                ApplyHit(attack);
             }
             else
             {
-                // Collided with hitbox
-                
-                ApplyHit(attack);
+                if (_state != STATE.DASHING)
+                    return;
+
+                if (bulletComponent.attackData.attackType != AttackType.ABSORBABLE)
+                    return;
+
+                switch (bulletComponent.attackData.attackBonusType)
+                {
+                    case AttackBonusType.DAMAGE:
+                        CurrentDamage.AddTransformator(f => f * 2, 100);
+                        Destroy(bulletComponent.gameObject);
+                        break;
+                    case AttackBonusType.RANGE:
+                        CurrentRange.AddTransformator(f => f * 2, 100);
+                        Destroy(bulletComponent.gameObject);
+                        break;
+                    case AttackBonusType.MOVESPEED:
+                        Debug.LogError("Movespeed not implemented yet");
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
