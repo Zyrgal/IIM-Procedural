@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 11e370da7721cdc42b28182c68ac3960, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 0, g: 0.17254902, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -158,7 +158,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 11e370da7721cdc42b28182c68ac3960, type: 3}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 0, g: 0.17201233, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -250,7 +250,7 @@ GameObject:
   - component: {fileID: 1940373930646248325}
   - component: {fileID: 7683913516666695157}
   m_Layer: 0
-  m_Name: Enemy
+  m_Name: EnemyStrong
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -334,7 +334,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef68b37496ef62c449621d0c55f8ba31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  life: 3
+  life: 25
   invincibilityDuration: 0
   invincibilityBlinkPeriod: 0.2
   hitLayers:
@@ -354,8 +354,8 @@ MonoBehaviour:
     type: 3}
   attackSpawnPoint: {fileID: 4766563018300211270}
   attackWarmUp: 1.5
-  attackDistance: 3.5
-  attackCooldown: 0.8
+  attackDistance: 1.5
+  attackCooldown: 0.2
   orientation: 1
   shotCount: 3
   shotInterval: 0.8
