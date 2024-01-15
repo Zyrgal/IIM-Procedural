@@ -85,6 +85,7 @@ public class Player : MonoBehaviour
     [SerializeField] int baseDamage = 1;
     [SerializeField] float baseRange = 1;
     public Alterable<int> CurrentDamage { get; private set; }
+    public Alterable2<int> CurrentDamage2 { get; private set; }
     public Alterable<float> CurrentRange { get; private set; }
 
     private Attack attackComponent;
@@ -92,8 +93,11 @@ public class Player : MonoBehaviour
     public GameObject attackSpawnPoint = null;
     public float attackCooldown = 0.3f;
     public ORIENTATION orientation = ORIENTATION.FREE;
-
     private float lastAttackTime = float.MinValue;
+
+    private List<object> labels = new List<object>();
+    private List<IAlterationID> alterationsID = new List<IAlterationID>();
+
 
     // Input attributes
     [Header("Input")]
@@ -123,6 +127,7 @@ public class Player : MonoBehaviour
     {
         SetState(STATE.IDLE);
         CurrentDamage = new Alterable<int>(baseDamage);
+        CurrentDamage2 = new Alterable2<int>(baseDamage);
         CurrentRange = new Alterable<float>(baseRange);
     }
 
@@ -373,8 +378,16 @@ public class Player : MonoBehaviour
         // transform used for spawn is attackSpawnPoint.transform if attackSpawnPoint is not null. Else it's transform.
         Transform spawnTransform = attackSpawnPoint ? attackSpawnPoint.transform : transform;
         GameObject instance = GameObject.Instantiate(attackPrefab, spawnTransform.position, spawnTransform.rotation);
-        instance.GetComponent<Attack>().damage = CurrentDamage.CalculValue();
+
+        instance.GetComponent<Attack>().damage = CurrentDamage2.CalculValue();
+        ResetAttackValue();
+
         SetState(STATE.IDLE);
+    }
+
+    private void ResetAttackValue()
+    {
+        CurrentDamage2.RemoveAllAlteration();
     }
 
     /// <summary>
@@ -525,7 +538,8 @@ public class Player : MonoBehaviour
                 switch (bulletComponent.attackData.attackBonusType)
                 {
                     case AttackBonusType.DAMAGE:
-                        CurrentDamage.AddTransformator(f => f * 2, 100);
+                        alterationsID.Add(CurrentDamage2.AddCustomAlteration(f => f * 2 ,1, "DamageUP"));
+                        //labels.Add(CurrentDamage.AddTransformator(f => f * 2, 100));
                         Destroy(bulletComponent.gameObject);
                         break;
                     case AttackBonusType.RANGE:
