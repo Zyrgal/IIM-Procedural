@@ -346,7 +346,7 @@ public class Enemy : MonoBehaviour
     /// <summary>
     /// Called when enemy touches a player attack's hitbox.
     /// </summary>
-    private void ApplyHit(Attack attack)
+    public void ApplyHit(Attack attack)
     {
         if (Time.time - _lastHitTime < invincibilityDuration)
             return;

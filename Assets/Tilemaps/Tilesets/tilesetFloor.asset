@@ -106,7 +106,7 @@ MonoBehaviour:
       offset: {x: 0, y: 0, z: 0}
       rotation: {x: 0, y: 0, z: 0}
       offsetMode: 0
-      showTileWithPrefab: 1
+      showTileWithPrefab: 0
       showPrefabPreviewInTilePalette: 0
     autilingGroup: 0
   - uv:
@@ -116,12 +116,8 @@ MonoBehaviour:
       width: 0.125
       height: 0.03125
     collData:
-      vertices:
-      - {x: 0, y: 0}
-      - {x: 0, y: 1}
-      - {x: 1, y: 1}
-      - {x: 1, y: 0}
-      type: 0
+      vertices: []
+      type: 1
     paramContainer:
       m_paramList: []
     prefabData:
@@ -368,7 +364,11 @@ MonoBehaviour:
       width: 0.125
       height: 0.03125
     collData:
-      vertices: []
+      vertices:
+      - {x: 0, y: 0}
+      - {x: 0, y: 1}
+      - {x: 1, y: 1}
+      - {x: 1, y: 0}
       type: 1
     paramContainer:
       m_paramList: []

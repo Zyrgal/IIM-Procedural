@@ -12,12 +12,6 @@ public class Room : MonoBehaviour {
 
     public bool isStartRoom = false;
 
-    [Header("Doors")]
-    public bool northDoor = true;
-    public bool southDoor = true;
-    public bool eastDoor = true;
-    public bool westDoor = true;
-
     // Position of the room in index coordinates. Coordinates {0,0} are the coordinates of the central room. Room {1,0} is on the right side of room {0,0}.
 	public Vector2Int position = Vector2Int.zero;
     // Size of the room in index coordinates. By default : {1,1}.
@@ -125,11 +119,28 @@ public class Room : MonoBehaviour {
     /// </summary>
     public Door GetDoor(Utils.ORIENTATION orientation, Vector3 from)
     {
-        Vector2Int doorPosition = position + GetPositionOffset(from);
+        return GetDoor(orientation, GetPositionOffset(from));        
+    }
+
+    /// <summary>
+    /// Get door for given orientation (North, south, east or west) for room with size of one by one.
+    /// </summary>
+    public Door GetDoor(Utils.ORIENTATION orientation)
+    {
+        Debug.Assert(size != Vector2Int.one, "GetDoor(orientation) should only be used on room of size {1,1}. In other cases, please use: GetDoor(orientation,offset)");        
+        return GetDoor(orientation, Vector2Int.zero);
+    }
+
+    /// <summary>
+    /// Get door for given orientation (North, south, east or west) and a given local offset in index coordinate for room with size greater than one.
+    /// </summary>
+    public Door GetDoor(Utils.ORIENTATION orientation, Vector2Int offset)
+    {
+        Vector2Int doorPosition = position + offset;
         List<Door> doors = GetDoors();
-        foreach(Door door in doors)
+        foreach (Door door in doors)
         {
-            if (doorPosition == position + GetPositionOffset(door.transform.position)
+            if (doorPosition == doorPosition + GetPositionOffset(door.transform.position)
                 && door.Orientation == orientation)
             {
                 return door;

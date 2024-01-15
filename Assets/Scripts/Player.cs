@@ -511,6 +511,8 @@ public class Player : MonoBehaviour
         Room previous = _room;
         _room = room;
         room.OnEnterRoom(previous);
+
+        //ApplyKnockBackCoroutine(1);
     }
 
     /// <summary>
