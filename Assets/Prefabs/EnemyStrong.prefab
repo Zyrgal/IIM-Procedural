@@ -357,8 +357,8 @@ MonoBehaviour:
   attackDistance: 1.5
   attackCooldown: 0.2
   orientation: 1
-  shotCount: 3
-  shotInterval: 0.8
+  shotCount: 5
+  shotInterval: 0.2
   timeBeforeThrowAttack: 3
   fireRate: 2
 --- !u!210 &1940373930646248325
