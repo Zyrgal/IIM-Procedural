@@ -331,7 +331,7 @@ MonoBehaviour:
   m_mapBounds:
     m_Center: {x: 5.5, y: 4.5, z: 0}
     m_Extent: {x: 5.5, y: 4.5, z: 0}
-  m_tileset: {fileID: 11400000, guid: 01e213563370782439bb825da623a669, type: 2}
+  m_tileset: {fileID: 11400000, guid: 020b5fe460829cd458b332caa790f3cb, type: 2}
   m_minGridX: 0
   m_minGridY: 0
   m_maxGridX: 10
@@ -416,6 +416,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isStartRoom: 1
+  northDoor: 1
+  southDoor: 1
+  eastDoor: 1
+  westDoor: 1
   position: {x: 0, y: 0}
   size: {x: 1, y: 1}
 --- !u!50 &4452598050071473784
