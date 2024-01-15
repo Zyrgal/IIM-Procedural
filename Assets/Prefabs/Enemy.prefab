@@ -251,7 +251,7 @@ GameObject:
   - component: {fileID: 7683913516666695157}
   m_Layer: 0
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -335,7 +335,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   life: 3
-  invincibilityDuration: 0
+  invincibilityDuration: 0.5
   invincibilityBlinkPeriod: 0.2
   hitLayers:
     serializedVersion: 2
@@ -382,7 +382,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PathFinding:
-    HeuristicType: 1
+    HeuristicType: 2
     MaxDistance: 0
     PassableDetectionMode: 1
     RaycastDetectionLayerMask:
@@ -394,5 +394,5 @@ MonoBehaviour:
     m_cellSize: {x: 0, y: 0}
   ComputeMode: 0
   AsyncCoroutineIterations: 20
-  MovingSpeed: 1
   ReachNodeDistance: 0.1
+  showGizmos: 1
