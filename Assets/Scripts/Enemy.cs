@@ -68,6 +68,7 @@ public class Enemy : MonoBehaviour
     public GameObject attackPrefab = null;
     public GameObject attackSpawnPoint = null;
 	public float attackWarmUp = 0.5f;
+	private float elapsetimeSinceAttackWarmUp;
 	public float attackDistance = 0.5f;
     public float attackCooldown = 1.0f;
     public ORIENTATION orientation = ORIENTATION.FREE;
@@ -77,7 +78,7 @@ public class Enemy : MonoBehaviour
     [Header("Fire")]
     [SerializeField] private int shotCount = 3;
     [SerializeField] private float shotInterval = 0.8f;
-    [SerializeField] public float timeBeforeThrowAttack = 3f;
+    [SerializeField] private float timeBeforeThrowAttack = 3f;
     public float ElapsetimeSinceLastFire { get => Time.time - lastFireTime; }
     private float elapsetimeSinceCanFire;
     private float lastFireTime;
@@ -130,18 +131,17 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-        elapsetimeSinceCanFire -= Time.deltaTime;
+        //elapsetimeSinceCanFire -= Time.deltaTime;
         _stateTimer += Time.deltaTime;
 
         //if (CanFire()) UpdateState();
-        
+
         UpdateAI();
     }
 
     public bool CanFire()
     {
-        elapsetimeSinceCanFire -= Time.deltaTime;
-        return ShootAvailable() && IsInRange() && ShootStartTimePass();
+        return ShootAvailable() && ShootStartTimePass();
     }
 
     private bool IsInRange()
@@ -153,7 +153,7 @@ public class Enemy : MonoBehaviour
 
     public bool ShootStartTimePass()
     {
-        return elapsetimeSinceCanFire < 0;
+        return elapsetimeSinceCanFire <= 0;
     }
 
     private void FixedUpdate()
@@ -171,17 +171,27 @@ public class Enemy : MonoBehaviour
         float angleToTarget = Mathf.Atan2(enemyToPlayer.y, enemyToPlayer.x) * Mathf.Rad2Deg;
         _body.rotation = angleToTarget;
 
-        if (CanMove() && Player.Instance.Room == _room)
+        if (Player.Instance.Room != _room)
+            return;
+
+        if (CanMove())
         {
             if (IsInRange())
             {
+                elapsetimeSinceCanFire -= Time.deltaTime;
+
                 if (CanFire())
                 {
-                    Attack();
-                    UpdateState();
+                    SetState(STATE.ATTACKING); 
                 }
-            } else
+            } 
+            else
             {
+                if (elapsetimeSinceAttackWarmUp <= 0)
+                {
+                    elapsetimeSinceAttackWarmUp = attackWarmUp;
+                }
+
                 if (_pathfinding != null)
                 {
                     _pathfinding.ComputePath(Player.Instance.transform.position);
@@ -192,6 +202,20 @@ public class Enemy : MonoBehaviour
                     _direction = enemyToPlayer.normalized;
                 }
             }    
+        }
+        else if (_state == STATE.ATTACKING)
+        {
+            elapsetimeSinceAttackWarmUp -= Time.deltaTime;
+
+            if (!HaveWaitWarmUp())
+                return;
+
+            if (!CanFire()) 
+                return;
+
+            SetState(STATE.ATTACKING);
+            Attack();
+            UpdateState();
         }
         else
         {
@@ -281,15 +305,8 @@ public class Enemy : MonoBehaviour
     /// </summary>
     private void Attack()
     {
-        //if (Time.time - lastAttackTime < attackCooldown) return;
-
         if (!ShootAvailable() && !ShootStartTimePass())
             return;
-
-        lastFireTime = Time.time;
-
-        //lastAttackTime = Time.time;
-        SetState(STATE.ATTACKING);
     }
 
     /// <summary>
@@ -309,12 +326,17 @@ public class Enemy : MonoBehaviour
         //Transform spawnTransform = attackSpawnPoint ? attackSpawnPoint.transform : transform;
         GameObject.Instantiate(attackPrefab, attackSpawnPoint.transform.position, bulletRotation);
     }
-    public bool ShootAvailable()
+    private bool ShootAvailable()
     {
         return ElapsetimeSinceLastFire > FireRate;
     }
 
-    public void Fire()
+    private bool HaveWaitWarmUp()
+    {
+        return elapsetimeSinceAttackWarmUp < 0;
+    }
+
+    private void Fire()
     {
         if (sequence != null && sequence.IsPlaying())
         {
