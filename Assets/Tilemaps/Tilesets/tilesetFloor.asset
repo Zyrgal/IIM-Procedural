@@ -108,7 +108,7 @@ MonoBehaviour:
       offsetMode: 0
       showTileWithPrefab: 0
       showPrefabPreviewInTilePalette: 0
-    autilingGroup: 0
+    autilingGroup: 1
   - uv:
       serializedVersion: 2
       x: 0.5
