@@ -11,6 +11,7 @@ using UnityEngine;
 public class Attack : MonoBehaviour {
 
 	public int damage;
+	public float range;
     public bool hasInfiniteLifetime = false;
 	[HideIf("hasInfiniteLifetime")]
     public float lifetime = 0.3f;
