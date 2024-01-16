@@ -265,10 +265,11 @@ public class DungeonGenerator : MonoBehaviour
                 break;
         }
 
-        Connection connection = connections.Find(e => (e.fromNode.Position == position && e.toNode.Position == positionToCheck) ||
-                                                      (e.toNode.Position == position && e.fromNode.Position == positionToCheck));
+        // Check if a connection corresponding to the orientation exists and return it's type if it does
+        Connection connection = connections.FirstOrDefault(e => e.fromNode.Position == position && e.toNode.Position == positionToCheck ||
+                                                                e.fromNode.Position == positionToCheck && e.toNode.Position == position);
 
-        if (connection != null)
+        if (connection != default)
             return connection.type;
 
         return ConnectionType.None;
@@ -306,7 +307,7 @@ public class DungeonGenerator : MonoBehaviour
         return orientations;
     }
 
-    public void ClearRoom()
+    public void ClearRooms()
     {
         for (int i = transform.childCount - 1; i >= 0; i--)
         {
@@ -319,9 +320,9 @@ public class DungeonGenerator : MonoBehaviour
 
     public void SpawnRooms()
     {
-        ClearRoom();
+        ClearRooms();
 
-        // Generate basic rooms
+        // Generate rooms
         foreach (var node in nodes)
         {
             Room room = null;
@@ -355,10 +356,10 @@ public class DungeonGenerator : MonoBehaviour
             // Spawn and setup the room
             room = Instantiate(room, node.Position * roomSize, Quaternion.identity);
             room.transform.parent = transform;
-            room.position = new Vector2Int(node.x, node.y) * roomSize;
-            room.size = roomSize;
+            room.position = new Vector2Int(node.x, node.y);
 
-            // Setup the doors
+            // Setup the doors (there is a lot of optimization to be made concerning the connections and doors, but time)
+            // Doors will not be setup properly without being in runtime
             foreach (var door in room.GetDoors())
             {
                 switch (GetConnectionType(node.Position, door.Orientation))
@@ -374,8 +375,6 @@ public class DungeonGenerator : MonoBehaviour
                         break;
                     case ConnectionType.Hidden:
                         door.SetState(Door.STATE.SECRET);
-                        break;
-                    default:
                         break;
                 }
             }
@@ -545,7 +544,7 @@ public class DungeonGeneratorEditor : Editor
         if (GUILayout.Button("Generate layout from graph"))
             source.SpawnRooms();
         if (GUILayout.Button("Clear layout"))
-            source.ClearRoom();
+            source.ClearRooms();
         GUILayout.EndHorizontal();
     }
 
