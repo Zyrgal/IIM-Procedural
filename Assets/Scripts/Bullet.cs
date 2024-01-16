@@ -72,4 +72,13 @@ public class Bullet : MonoBehaviour
     {
         rb.velocity = transform.right * bulletSpeed;
     }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Debug.Log(collision.name);
+        if (collision.name == "Wall" || collision.name == "Door" || collision.name == "0_0")
+        {
+            Destroy(gameObject);
+        }
+    }
 }
