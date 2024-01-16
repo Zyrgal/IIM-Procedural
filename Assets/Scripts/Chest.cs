@@ -1,15 +1,12 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Heart collectible
-/// </summary>
-public class HeartCollectible : ACollectible {
-
+public class Chest : ACollectible
+{
     protected override void OnCollect()
     {
-        Player.Instance.life++;
+        Player.Instance.RandomUpgrade();
 
         if (GetComponentInParent<Choice>() != null)
             GetComponentInParent<Choice>().Destroy();
