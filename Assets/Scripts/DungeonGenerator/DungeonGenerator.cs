@@ -142,29 +142,77 @@ public class DungeonGenerator : MonoBehaviour
             if (attempts >= nodeMaxAttempts && !IsSlotValid(newPosition, pathType))
                 continue;
 
-            Node currentNode = new Node((int)newPosition.x, (int)newPosition.y, pathType == PathType.Main ? NodeType.MainPath : NodeType.Path);
-            nodes.Add(currentNode);
-
-            foreach (var node in GetNeighboors(currentNode.Position))
-            {
-                Connection connection = new Connection(node, currentNode, ConnectionType.Open);
-                connections.Add(connection);
-            }
-
-            previousNode = currentNode;
+            previousNode = AddNode(newPosition, pathType == PathType.Main ? NodeType.MainPath : NodeType.Path);
 
             yield return new WaitForSeconds(generationDelay);
         }
     }
 
+    public Node AddNode(Vector2 position, NodeType nodeType)
+    {
+        Node node = new Node((int)position.x, (int)position.y, nodeType);
+        ConnectionType connectionType;
+
+        switch (nodeType)
+        {
+            case NodeType.None:
+                connectionType = ConnectionType.None;
+                break;
+
+            case NodeType.Secret:
+                connectionType = ConnectionType.Hidden;
+                break;
+
+            case NodeType.End:
+                connectionType = ConnectionType.NeedKey;
+                break;
+
+            case NodeType.Start:
+            case NodeType.MainPath:
+            case NodeType.Path:
+            case NodeType.Fusion:
+            case NodeType.Center:
+            case NodeType.Key:
+            default:
+                connectionType = ConnectionType.Open;
+                break;
+        }
+
+        nodes.Add(node);
+        foreach (var neighboor in GetNeighboors(node.Position))
+        {
+            Connection connection = new Connection(node, neighboor, connectionType);
+            connections.Add(connection);
+        }
+
+        return node;
+    }
+
     private IEnumerator ApplyAdditionalRules()
     {
+        // Tag the node that are surrounded by 8 other
         foreach (var node in nodes)
-            if (HasEigthNeighboors(node.Position))
+            if (node.type != NodeType.Start && HasEigthNeighboors(node.Position))
                 node.type = NodeType.Center;
 
+        // Remove them and their connection
         nodes.RemoveAll(e => e.type == NodeType.Center);
         connections.RemoveAll(e => e.fromNode.type == NodeType.Center || e.toNode.type == NodeType.Center);
+
+        // Get all the available slots
+        List<Vector2> emptySlots = new List<Vector2>(); 
+        foreach (var node in nodes)
+            emptySlots.AddRange(GetEmptyNeighboors(node.Position, PathType.Other));
+
+        // Key room
+        emptySlots = emptySlots.OrderBy(e => GetNeighboors(e).Count).ToList();
+        AddNode(emptySlots[0], NodeType.Key);
+        emptySlots.RemoveAt(0);
+
+        // Secret room
+        emptySlots = emptySlots.OrderByDescending(e => GetAllNeighboors(e).Count).ToList();
+        AddNode(emptySlots[0], NodeType.Secret);
+        emptySlots.RemoveAt(0);
 
         yield return null;
     }
@@ -223,7 +271,6 @@ public class DungeonGenerator : MonoBehaviour
     private bool HasEigthNeighboors(Vector2 position)
     {
         return nodes.Where(node => node.Position != position &&
-                                   node.type != NodeType.Start &&
                                    Mathf.Abs(node.x - position.x) <= 1 && 
                                    Mathf.Abs(node.y - position.y) <= 1).Count() == 8;
     }
@@ -234,13 +281,30 @@ public class DungeonGenerator : MonoBehaviour
         return nodes.Where(e => Vector3.Distance(e.Position, position) == 1).ToList();
     }
 
-    private List<Vector2> GetEmptyNeighboors(Vector2 position)
+    private List<Node> GetAllNeighboors(Vector2 position)
     {
-        List<Vector2> emptySlots = new List<Vector2>();
+        return nodes.Where(node => node.Position != position &&
+                                   Mathf.Abs(node.x - position.x) <= 1 &&
+                                   Mathf.Abs(node.y - position.y) <= 1).ToList();
+    }
 
-        // WIP
+    private List<Vector2> GetEmptyNeighboors(Vector2 position, PathType pathType)
+    {
+        List<Vector2> neighboors = new List<Vector2>();
 
-        return emptySlots;
+        if (IsSlotValid(position + Vector2.up, pathType))
+            neighboors.Add(position + Vector2.up);
+
+        if (IsSlotValid(position + Vector2.right, pathType))
+            neighboors.Add(position + Vector2.right);
+
+        if (IsSlotValid(position + Vector2.down, pathType))
+            neighboors.Add(position + Vector2.down);
+
+        if (IsSlotValid(position + Vector2.left, pathType))
+            neighboors.Add(position + Vector2.left);
+
+        return neighboors;
     }
 
     private ConnectionType GetConnectionType(Vector2 position, Utils.ORIENTATION orientation)
@@ -345,6 +409,17 @@ public class DungeonGenerator : MonoBehaviour
                     room = basicRooms[Random.Range(0, basicRooms.Count)];
                     break;
 
+                // Key rooms
+                case NodeType.Key:
+                    room = keyRooms[Random.Range(0, keyRooms.Count)];
+                    break;
+
+                // Secret rooms
+                case NodeType.Secret:
+                    room = basicRooms[Random.Range(0, basicRooms.Count)];
+                    //room = secretRooms[Random.Range(0, secretRooms.Count)];
+                    break;
+
                 // Basic/Default rooms
                 case NodeType.MainPath:
                 case NodeType.Path:
@@ -399,6 +474,12 @@ public class DungeonGenerator : MonoBehaviour
                     break;
                 case NodeType.Path:
                     Gizmos.color = Color.cyan;
+                    break;
+                case NodeType.Secret:
+                    Gizmos.color = Color.white;
+                    break;
+                case NodeType.Key:
+                    Gizmos.color = Color.magenta;
                     break;
                 case NodeType.End:
                     Gizmos.color = Color.red;
@@ -494,6 +575,8 @@ public enum NodeType
     End,
     Fusion,
     Center,
+    Secret,
+    Key,
 }
 
 public enum ConnectionType
