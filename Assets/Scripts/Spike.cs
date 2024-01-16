@@ -11,10 +11,17 @@ public class Spike : MonoBehaviour
 	{
 		if (Player.Instance == null)
 			return;
-		if(collision.attachedRigidbody.gameObject != Player.Instance.gameObject)
+
+		if (collision.attachedRigidbody.GetComponent<Enemy>() != null)
+			collision.attachedRigidbody.GetComponent<Enemy>().ApplyHit(null);
+		else
+		if (collision.attachedRigidbody.gameObject == Player.Instance.gameObject)
+			Player.Instance.ApplyHit(null);
+		else
 			return;
 
-		Player.Instance.ApplyHit(null);
+
+		
 	}
 
 }

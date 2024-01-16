@@ -10,5 +10,8 @@ public class HeartCollectible : ACollectible {
     protected override void OnCollect()
     {
         Player.Instance.life++;
+
+        if (GetComponentInParent<Choice>() != null)
+            GetComponentInParent<Choice>().Destroy();
     }
 }

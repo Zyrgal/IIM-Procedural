@@ -245,7 +245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   life: 5
-  invincibilityDuration: 1
+  invincibilityDuration: 1.8
   invincibilityBlinkPeriod: 0.2
   hitLayers:
     serializedVersion: 2
@@ -254,9 +254,9 @@ MonoBehaviour:
   knockbackDuration: 0.5
   deadColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
   defaultMovement:
-    speedMax: 3
-    acceleration: 15
-    friction: 15
+    speedMax: 4
+    acceleration: 18
+    friction: 3000
   stunnedMovement:
     speedMax: 2
     acceleration: 12
@@ -269,6 +269,7 @@ MonoBehaviour:
   dashDuration: 0.1
   dashForce: 30
   baseDamage: 1
+  baseRange: 1
   attackPrefab: {fileID: 2185964762067344080, guid: fedea07bedcd0dc4b8633fc878bfdc59,
     type: 3}
   attackSpawnPoint: {fileID: 3061304261252655527}

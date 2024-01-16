@@ -17,7 +17,9 @@ public class DungeonGenerator : MonoBehaviour
     public int height = 10;
     public int maxAttempts = 5;
     public int nodeMaxAttempts = 5;
-    public Vector2 roomSize = new Vector2(11, 9);
+    public Vector2Int roomSize = new Vector2Int(11, 9);
+
+    public float generationDelay = 0.1f;
 
     [HideInInspector] public List<Node> nodes;
     [HideInInspector] public List<Connection> connections;
@@ -33,11 +35,10 @@ public class DungeonGenerator : MonoBehaviour
 
     private void Start()
     {
-        GenerateDungeon();
-        SpawnRooms();
+        StartCoroutine(GenerateDungeon());
     }
 
-    public void GenerateDungeon()
+    public IEnumerator GenerateDungeon()
     {
         int attempts = 0;
         while (attempts < maxAttempts)
@@ -45,68 +46,84 @@ public class DungeonGenerator : MonoBehaviour
             nodes = new List<Node>();
             connections = new List<Connection>();
 
-            if (!CreateMainPath())
-            {
-                attempts++;
-                continue;
-            }
+            yield return StartCoroutine(CreateMainPath());
 
-            CreateSecondaryPaths();
-            ApplyAdditionalRules();
-
-            if (IsDungeonValid())
+            if (nodes.Count() >= mainPathLength.x && nodes.Count() <= mainPathLength.y)
             {
-                // Convert the graph into a playable level (Instantiate GameObjects, set positions, etc.)
-                // This step can be implemented separately
-                Debug.Log("Dungeon generated successfully!");
-                break;
+                yield return StartCoroutine(CreateSecondaryPaths());
+                yield return StartCoroutine(ApplyAdditionalRules());
+
+                if (IsDungeonValid())
+                {
+                    // Convert the graph into a playable level (Instantiate GameObjects, set positions, etc.)
+                    if (Application.isPlaying)
+                        SpawnRooms();
+
+                    Debug.Log("Dungeon generated successfully!");
+                    break;
+                }
+                else
+                {
+                    attempts++;
+                }
             }
             else
-            {
                 attempts++;
-            }
         }
+
+        yield return null;
     }
 
-    private bool CreateMainPath()
+    private IEnumerator CreateMainPath()
     {
+        // Create Start node
         int pathLength = Random.Range(mainPathLength.x, mainPathLength.y);
         Node startNode = new Node(0, 0, NodeType.Start);
         nodes.Add(startNode);
 
-        CreatePath(startNode, PathType.Main, pathLength);
+        // Generate main path
+        yield return StartCoroutine(CreatePath(startNode, PathType.Main, pathLength));
 
+        // Replace the last node of the path by an End node and connect it
         nodes.Last().type = NodeType.End;
-        connections.First(e => e.fromNode.type == NodeType.End || e.toNode.type == NodeType.End).type = ConnectionType.NeedKey;
+        connections.First(e => e.IsConnectedTo(NodeType.End)).type = ConnectionType.NeedKey;
 
-        return true;
+        yield return null;
     }
 
-    private void CreateSecondaryPaths()
+    private IEnumerator CreateSecondaryPaths()
     {
+        // Get the main path to start secondary path from it
         List<Node> mainPath = nodes.Where(node => node.type == NodeType.MainPath || node.type == NodeType.End).ToList();
-        int n = 0;
 
+        // Automatically determine the paths length and how many there should be
         secondaryPathLength = new Vector2Int(2, Mathf.Max(mainPath.Count / 3, 4));
         numberOfSecondaryPaths = mainPath.Count / 2;
 
+        int n = 0;
         while (n <= numberOfSecondaryPaths || mainPath.Count <= 0)
         {
+            // 50% chance to only be 1 node long or be longer
             int pathLength = Random.Range(0, 2) == 0 ? 1 : Random.Range(secondaryPathLength.x, secondaryPathLength.y);
             Node originNode = mainPath[Random.Range(0, mainPath.Count)];
 
-            CreatePath(originNode, PathType.Secondary, pathLength);
+            yield return StartCoroutine(CreatePath(originNode, PathType.Secondary, pathLength));
 
+            // Remove the used node from the pool of possible path origin
             mainPath.Remove(originNode);
             n++;
         }
+
+        yield return null;
     }
 
-    private void CreatePath(Node from, PathType pathType, int pathLength)
+    private IEnumerator CreatePath(Node from, PathType pathType, int pathLength)
     {
         Node previousNode = from;
-        Vector2 currentDirection = GetRandomDirection();
 
+        // Need to change the GetRandomDirection to a GetRandomValidDirection or something to be more reliable
+        Vector2 currentDirection = GetRandomDirection();
+        
         for (int i = 1; i <= pathLength; i++)
         {
             Vector2 newPosition = previousNode.Position;
@@ -135,10 +152,12 @@ public class DungeonGenerator : MonoBehaviour
             }
 
             previousNode = currentNode;
+
+            yield return new WaitForSeconds(generationDelay);
         }
     }
 
-    private void ApplyAdditionalRules()
+    private IEnumerator ApplyAdditionalRules()
     {
         foreach (var node in nodes)
             if (HasEigthNeighboors(node.Position))
@@ -146,8 +165,11 @@ public class DungeonGenerator : MonoBehaviour
 
         nodes.RemoveAll(e => e.type == NodeType.Center);
         connections.RemoveAll(e => e.fromNode.type == NodeType.Center || e.toNode.type == NodeType.Center);
+
+        yield return null;
     }
 
+    #region Conditions
     private bool IsDungeonValid()
     {
         // Implement validation logic here
@@ -164,18 +186,13 @@ public class DungeonGenerator : MonoBehaviour
         if (IsNodeOverlap(position))
             return false;
 
-        if (pathType == PathType.Main)
-        {
-            // Make sure it cannot generate a room next to another one (excepts the one it's from)
-            if (GetNeighboors(position).Count > 1)
-                return false;
-        }
-        else
-        {
-            // Check if the slot is not next to the End node
-            if (IsNextToEndNode(position))
-                return false;
-        }
+        // Make sure it cannot generate a room next to another one in the main path (excepts the one it's from)
+        if (pathType == PathType.Main && GetNeighboors(position).Count > 1)
+            return false;
+
+        // Check if the slot is not next to the End node
+        if (IsNextToEndNode(position))
+            return false;
 
         // If all conditions are met, the slot is valid
         return true;
@@ -205,11 +222,12 @@ public class DungeonGenerator : MonoBehaviour
 
     private bool HasEigthNeighboors(Vector2 position)
     {
-        // Wip c'est pas bon
         return nodes.Where(node => node.Position != position &&
-                                   Mathf.Abs(node.x - position.x) < 2 && 
-                                   Mathf.Abs(node.y - position.y) < 2).Count() == 8;
+                                   node.type != NodeType.Start &&
+                                   Mathf.Abs(node.x - position.x) <= 1 && 
+                                   Mathf.Abs(node.y - position.y) <= 1).Count() == 8;
     }
+    #endregion
 
     private List<Node> GetNeighboors(Vector2 position)
     {
@@ -225,6 +243,38 @@ public class DungeonGenerator : MonoBehaviour
         return emptySlots;
     }
 
+    private ConnectionType GetConnectionType(Vector2 position, Utils.ORIENTATION orientation)
+    {
+        Vector2 positionToCheck = Vector2.zero;
+
+        switch (orientation)
+        {
+            case Utils.ORIENTATION.NONE:
+                return ConnectionType.None;
+            case Utils.ORIENTATION.NORTH:
+                positionToCheck = position + Vector2.up;
+                break;
+            case Utils.ORIENTATION.EAST:
+                positionToCheck = position + Vector2.right;
+                break;
+            case Utils.ORIENTATION.SOUTH:
+                positionToCheck = position + Vector2.down;
+                break;
+            case Utils.ORIENTATION.WEST:
+                positionToCheck = position + Vector2.left;
+                break;
+        }
+
+        // Check if a connection corresponding to the orientation exists and return it's type if it does
+        Connection connection = connections.FirstOrDefault(e => e.fromNode.Position == position && e.toNode.Position == positionToCheck ||
+                                                                e.fromNode.Position == positionToCheck && e.toNode.Position == position);
+
+        if (connection != default)
+            return connection.type;
+
+        return ConnectionType.None;
+    }
+
     private Vector2 GetRandomDirection()
     {
         int randomIndex = Random.Range(0, 4);
@@ -238,7 +288,26 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
-    public void ClearRoom()
+    private List<Vector2> GetValidDirections(Vector2 position, PathType pathType)
+    {
+        List<Vector2> orientations = new List<Vector2>();
+
+        if (IsSlotValid(position + Vector2.up, pathType))
+            orientations.Add(Vector2.up);
+
+        if (IsSlotValid(position + Vector2.right, pathType))
+            orientations.Add(Vector2.right);
+
+        if (IsSlotValid(position + Vector2.down, pathType))
+            orientations.Add(Vector2.down);
+
+        if (IsSlotValid(position + Vector2.left, pathType))
+            orientations.Add(Vector2.left);
+
+        return orientations;
+    }
+
+    public void ClearRooms()
     {
         for (int i = transform.childCount - 1; i >= 0; i--)
         {
@@ -251,33 +320,64 @@ public class DungeonGenerator : MonoBehaviour
 
     public void SpawnRooms()
     {
-        ClearRoom();
+        ClearRooms();
 
-        // Generate basic rooms
+        // Generate rooms
         foreach (var node in nodes)
         {
             Room room = null;
+
+            // Determine which room to place
             switch (node.type)
             {
-                case NodeType.Start:
+                // Start rooms
+                case NodeType.Start:    
                     room = startRoom[Random.Range(0, startRoom.Count)];
                     break;
-                case NodeType.End:
+
+                // End rooms
+                case NodeType.End:      
                     room = endRoom[Random.Range(0, endRoom.Count)];
                     break;
-                case NodeType.Fusion:
+
+                // 4 tile rooms
+                case NodeType.Fusion:   
                     room = basicRooms[Random.Range(0, basicRooms.Count)];
                     break;
+
+                // Basic/Default rooms
                 case NodeType.MainPath:
                 case NodeType.Path:
                 default:
                     room = basicRooms[Random.Range(0, basicRooms.Count)];
                     break;
             }
-            room = Instantiate(room, node.Position * new Vector2(11, 9), Quaternion.identity);
+
+            // Spawn and setup the room
+            room = Instantiate(room, node.Position * roomSize, Quaternion.identity);
             room.transform.parent = transform;
-            room.position = new Vector2Int(11 * node.x, 9 * node.y);
-            room.size = new Vector2Int(11, 9);
+            room.position = new Vector2Int(node.x, node.y);
+
+            // Setup the doors (there is a lot of optimization to be made concerning the connections and doors, but time)
+            // Doors will not be setup properly without being in runtime
+            foreach (var door in room.GetDoors())
+            {
+                switch (GetConnectionType(node.Position, door.Orientation))
+                {
+                    case ConnectionType.None:
+                        door.SetState(Door.STATE.WALL);
+                        break;
+                    case ConnectionType.Open:
+                        door.SetState(Door.STATE.OPEN);
+                        break;
+                    case ConnectionType.NeedKey:
+                        door.SetState(Door.STATE.CLOSED);
+                        break;
+                    case ConnectionType.Hidden:
+                        door.SetState(Door.STATE.SECRET);
+                        break;
+                }
+            }
         }
     }
 
@@ -367,10 +467,27 @@ public class Connection
         this.toNode = toNode;
         this.type = type;
     }
+
+    public bool IsConnectedTo(Node node)
+    {
+        if (fromNode == node || toNode == node)
+            return true;
+        else
+            return false;
+    }
+
+    public bool IsConnectedTo(NodeType nodeType)
+    {
+        if (fromNode.type == nodeType || toNode.type == nodeType)
+            return true;
+        else
+            return false;
+    }
 }
 
 public enum NodeType
 {
+    None,
     Start,
     MainPath,
     Path,
@@ -381,6 +498,7 @@ public enum NodeType
 
 public enum ConnectionType
 {
+    None,
     Open,
     NeedKey,
     Hidden,
@@ -410,24 +528,24 @@ public class DungeonGeneratorEditor : Editor
         base.OnInspectorGUI();
 
         EditorGUILayout.Space();
+        GUILayout.BeginHorizontal("box");
         if (GUILayout.Button("Generate graph"))
-        {
-            source.GenerateDungeon();
-        }
+            source.StartCoroutine(source.GenerateDungeon());
         if (GUILayout.Button("Clear graph"))
         {
             source.nodes = new List<Node>();
             source.connections = new List<Connection>();
         }
-        EditorGUILayout.Space();
+        GUILayout.EndHorizontal();
+
+        //EditorGUILayout.Space();
+
+        GUILayout.BeginHorizontal("box");
         if (GUILayout.Button("Generate layout from graph"))
-        {
             source.SpawnRooms();
-        }
         if (GUILayout.Button("Clear layout"))
-        {
-            source.ClearRoom();
-        }
+            source.ClearRooms();
+        GUILayout.EndHorizontal();
     }
 
     void LoadRooms()

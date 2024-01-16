@@ -511,7 +511,28 @@ public class Player : MonoBehaviour
         Room previous = _room;
         _room = room;
         room.OnEnterRoom(previous);
+
+        //ApplyKnockBackCoroutine(1);
     }
+    public void RandomUpgrade()
+    {
+        int random = Random.Range(0, 3);
+
+        if (random == 0)
+        {
+            baseDamage++;
+        }
+        else if (random == 1)
+        {
+            baseRange++;
+        }
+        else
+        {
+            _currentMovement.speedMax++;
+            _currentMovement.acceleration++;
+        }
+    }
+
 
     /// <summary>
     /// Checks if player gets hit by any attack hitbox. Applies attack data (damages, knockback, ...) to player.
