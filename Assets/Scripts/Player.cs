@@ -84,9 +84,8 @@ public class Player : MonoBehaviour
     [Header("Attack"),Space(10)]
     [SerializeField] int baseDamage = 1;
     [SerializeField] float baseRange = 1;
-    public Alterable<int> CurrentDamage { get; private set; }
-    public Alterable2<int> CurrentDamage2 { get; private set; }
-    public Alterable<float> CurrentRange { get; private set; }
+    public Alterable2<int> CurrentDamage { get; private set; }
+    public Alterable2<float> CurrentRange { get; private set; }
 
     private Attack attackComponent;
     public GameObject attackPrefab = null;
@@ -126,9 +125,8 @@ public class Player : MonoBehaviour
     private void Start()
     {
         SetState(STATE.IDLE);
-        CurrentDamage = new Alterable<int>(baseDamage);
-        CurrentDamage2 = new Alterable2<int>(baseDamage);
-        CurrentRange = new Alterable<float>(baseRange);
+        CurrentDamage = new Alterable2<int>(baseDamage);
+        CurrentRange = new Alterable2<float>(baseRange);
     }
 
     private void Update()
@@ -379,15 +377,17 @@ public class Player : MonoBehaviour
         Transform spawnTransform = attackSpawnPoint ? attackSpawnPoint.transform : transform;
         GameObject instance = GameObject.Instantiate(attackPrefab, spawnTransform.position, spawnTransform.rotation);
 
-        instance.GetComponent<Attack>().damage = CurrentDamage2.CalculValue();
-        ResetAttackValue();
+        instance.GetComponent<Attack>().damage = CurrentDamage.CalculValue();
+        instance.GetComponent<Attack>().range = CurrentRange.CalculValue();
+        RemoveEphemeralBonus();
 
         SetState(STATE.IDLE);
     }
 
-    private void ResetAttackValue()
+    private void RemoveEphemeralBonus()
     {
-        CurrentDamage2.RemoveAllAlteration();
+        CurrentDamage.RemoveAlterationByString("DamageEphemeral");
+        CurrentRange.RemoveAlterationByString("RangeEphemeral");
     }
 
     /// <summary>
@@ -398,10 +398,6 @@ public class Player : MonoBehaviour
         if (_state == STATE.DASHING)
         {
             return;
-        }
-        else
-        {
-            Debug.Log(_state.ToString());
         }
 
         if (Time.time - _lastHitTime < invincibilityDuration)
@@ -559,12 +555,12 @@ public class Player : MonoBehaviour
                 switch (bulletComponent.attackData.attackBonusType)
                 {
                     case AttackBonusType.DAMAGE:
-                        alterationsID.Add(CurrentDamage2.AddCustomAlteration(f => f * 2 ,1, "DamageUP"));
+                        alterationsID.Add(CurrentDamage.AddCustomAlteration(f => f * 2 ,1, "DamageEphemeral"));
                         //labels.Add(CurrentDamage.AddTransformator(f => f * 2, 100));
                         Destroy(bulletComponent.gameObject);
                         break;
                     case AttackBonusType.RANGE:
-                        CurrentRange.AddTransformator(f => f * 2, 100);
+                        CurrentRange.AddCustomAlteration(f => f * 2, 1, "RangeEphemeral");
                         Destroy(bulletComponent.gameObject);
                         break;
                     case AttackBonusType.MOVESPEED:

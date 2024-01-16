@@ -93,6 +93,20 @@ public class Alterable2<T>
         return false;
     }
 
+    public void RemoveAlterationByString(string alterationName)
+    {
+        int removedAlteration = 0;
+        for (int i = 0; i < _effects.Count; i++)
+        {
+            if (_effects[i].name == alterationName)
+            {
+                _effects.Remove(_effects[i]);
+                removedAlteration++;
+                i--;
+            }
+        }
+    }
+
     internal void RemoveAllAlteration()
     {
         OnRemoveAllAlteration?.Invoke();
