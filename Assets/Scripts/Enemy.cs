@@ -210,6 +210,8 @@ public class Enemy : MonoBehaviour
             if (!HaveWaitWarmUp())
                 return;
 
+            elapsetimeSinceCanFire -= Time.deltaTime;
+
             if (!CanFire()) 
                 return;
 
@@ -256,7 +258,7 @@ public class Enemy : MonoBehaviour
 
         _state = state;
 		//_stateTimer = 0.0f;
-        ResetVariables();
+        //ResetVariables();
 
         // Enter new state
         switch (_state)
