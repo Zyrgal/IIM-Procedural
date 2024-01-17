@@ -266,15 +266,10 @@ public class Player : MonoBehaviour
         if (currentEphemeralSpeedDuration < 0)
             return;
 
-        Debug.Log("Decreasing move : " + currentEphemeralSpeedDuration);
-        Debug.Log("speedMax = " + CurrentMovespeedMax.CalculValue());
-        Debug.Log("speedAcceleration = " + CurrentMoveAcceleration.CalculValue());
-
         currentEphemeralSpeedDuration -= Time.deltaTime;
 
         if (currentEphemeralSpeedDuration <= 0)
         {
-            Debug.Log("Removed move bonus");
             RemoveEphemeralSpeed();
         }
     }
