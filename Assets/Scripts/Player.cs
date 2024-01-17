@@ -1,11 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static Attack;
 
 /// <summary>
 /// Player component. Manages inputs, character states and associated game flow.
@@ -70,33 +67,37 @@ public class Player : MonoBehaviour
 
     [Header("Dash")]
     [SerializeField] Image dashReadyImage;
-    private bool isDashing = false;
     [SerializeField] private float dashDuration = 0.03f;
-    private float currentDashTimer = 0f;
     [SerializeField] private float dashForce = 50;
+    private float currentDashTimer = 0f;
     private float dashCooldown = 1f;
     private float currentDashCooldown = 1f;
+    private bool isDashing = false;
     private bool canDash = true;
 
     //private bool canDash => currentDashCooldown < 0 ;
 
-    // Attack attributes
-    [Header("Attack"),Space(10)]
+    [Header("Modifiers base setup"),Space(10)]
     [SerializeField] int baseDamage = 1;
-    [SerializeField] float baseRange = 1;
+    [SerializeField] float baseRange = 1; 
+    [SerializeField] private float baseEphemeralSpeedDuration;
+    private float currentEphemeralSpeedDuration;
     public Alterable2<int> CurrentDamage { get; private set; }
     public Alterable2<float> CurrentRange { get; private set; }
+    public Alterable2<float> CurrentMovespeedMax { get; private set; }
+    public Alterable2<float> CurrentMoveAcceleration { get; private set; }
 
-    private Attack attackComponent;
+    [Header("Values for stats increase")]
+    [SerializeField] private int attackIncreaseValue;
+    [SerializeField] private int rangeIncreaseValue;
+    [SerializeField] private int moveSpeedIncreaseValue;
+    [SerializeField] private int accelerationIncreaseValue;
+
     public GameObject attackPrefab = null;
     public GameObject attackSpawnPoint = null;
     public float attackCooldown = 0.3f;
     public ORIENTATION orientation = ORIENTATION.FREE;
     private float lastAttackTime = float.MinValue;
-
-    private List<object> labels = new List<object>();
-    private List<IAlterationID> alterationsID = new List<IAlterationID>();
-
 
     // Input attributes
     [Header("Input")]
@@ -118,19 +119,22 @@ public class Player : MonoBehaviour
     {
         Instance = this;
         _body = GetComponent<Rigidbody2D>();
-        attackComponent = GetComponent<Attack>();
         GetComponentsInChildren<SpriteRenderer>(true, _spriteRenderers);
     }
 
     private void Start()
     {
         SetState(STATE.IDLE);
+        currentEphemeralSpeedDuration = -1;
         CurrentDamage = new Alterable2<int>(baseDamage);
         CurrentRange = new Alterable2<float>(baseRange);
+        CurrentMovespeedMax = new Alterable2<float>(defaultMovement.speedMax);
+        CurrentMoveAcceleration = new Alterable2<float>(defaultMovement.acceleration);
     }
 
     private void Update()
     {
+        UpdateEphemeralSpeed();
         DashInput();
         UpdateDashReadyVisual();
         UpdateState();
@@ -257,6 +261,24 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void UpdateEphemeralSpeed()
+    {
+        if (currentEphemeralSpeedDuration < 0)
+            return;
+
+        Debug.Log("Decreasing move : " + currentEphemeralSpeedDuration);
+        Debug.Log("speedMax = " + CurrentMovespeedMax.CalculValue());
+        Debug.Log("speedAcceleration = " + CurrentMoveAcceleration.CalculValue());
+
+        currentEphemeralSpeedDuration -= Time.deltaTime;
+
+        if (currentEphemeralSpeedDuration <= 0)
+        {
+            Debug.Log("Removed move bonus");
+            RemoveEphemeralSpeed();
+        }
+    }
+
     /// <summary>
     /// Changes current state to a new given state. Instructions related to exiting and entering a state should be coded in the two "switch(_state){...}" of this method.
     /// </summary>    
@@ -320,7 +342,7 @@ public class Player : MonoBehaviour
                 isDashing = false;
                 //Ne pas changer l'ordre des 2 lignes du dessous. La state doit être set avant de clamp la vélocité car sinon il prend la valeur de la state Dash qui est bcp trop grande et le personnage va continuer de glisser
                 SetState(STATE.IDLE);
-                _body.velocity = Vector2.ClampMagnitude(_body.velocity, _currentMovement.speedMax);
+                _body.velocity = Vector2.ClampMagnitude(_body.velocity, CurrentMovespeedMax.CalculValue());
             }
         }
     }
@@ -334,9 +356,18 @@ public class Player : MonoBehaviour
         if (_direction.magnitude > Mathf.Epsilon) // magnitude > 0
         {
             // If direction magnitude > 0, Accelerate in direction, then clamp velocity to max speed. Do not apply friction if character is moving toward a direction.
-            _body.velocity += _direction * _currentMovement.acceleration * Time.fixedDeltaTime;
-            _body.velocity = Vector2.ClampMagnitude(_body.velocity, _currentMovement.speedMax);
-            transform.eulerAngles = new Vector3(0.0f, 0.0f, ComputeOrientationAngle(_direction));
+            if (_currentMovement == defaultMovement)
+            {
+                _body.velocity += _direction * CurrentMoveAcceleration.CalculValue() * Time.fixedDeltaTime;
+                _body.velocity = Vector2.ClampMagnitude(_body.velocity, CurrentMovespeedMax.CalculValue());
+                transform.eulerAngles = new Vector3(0.0f, 0.0f, ComputeOrientationAngle(_direction));
+            }
+            else
+            {
+                _body.velocity += _direction * _currentMovement.acceleration * Time.fixedDeltaTime;
+                _body.velocity = Vector2.ClampMagnitude(_body.velocity, _currentMovement.speedMax);
+                transform.eulerAngles = new Vector3(0.0f, 0.0f, ComputeOrientationAngle(_direction));
+            }
         }
         else
         {
@@ -379,15 +410,21 @@ public class Player : MonoBehaviour
 
         instance.GetComponent<Attack>().damage = CurrentDamage.CalculValue();
         instance.GetComponent<Attack>().range = CurrentRange.CalculValue();
-        RemoveEphemeralBonus();
+        RemoveEphemeralAttackBonus();
 
         SetState(STATE.IDLE);
     }
 
-    private void RemoveEphemeralBonus()
+    private void RemoveEphemeralAttackBonus()
     {
         CurrentDamage.RemoveAlterationByString("DamageEphemeral");
         CurrentRange.RemoveAlterationByString("RangeEphemeral");
+    }
+
+    private void RemoveEphemeralSpeed()
+    {
+        CurrentMoveAcceleration.RemoveAllAlteration();
+        CurrentMovespeedMax.RemoveAllAlteration();
     }
 
     /// <summary>
@@ -512,7 +549,7 @@ public class Player : MonoBehaviour
     }
     public void RandomUpgrade()
     {
-        int random = Random.Range(0, 3);
+        int random = UnityEngine.Random.Range(0, 3);
 
         if (random == 0)
         {
@@ -555,16 +592,18 @@ public class Player : MonoBehaviour
                 switch (bulletComponent.attackData.attackBonusType)
                 {
                     case AttackBonusType.DAMAGE:
-                        alterationsID.Add(CurrentDamage.AddCustomAlteration(f => f * 2 ,1, "DamageEphemeral"));
-                        //labels.Add(CurrentDamage.AddTransformator(f => f * 2, 100));
+                        CurrentDamage.AddCustomAlteration(f => f + attackIncreaseValue, 1, "DamageEphemeral");
                         Destroy(bulletComponent.gameObject);
                         break;
                     case AttackBonusType.RANGE:
-                        CurrentRange.AddCustomAlteration(f => f * 2, 1, "RangeEphemeral");
+                        CurrentRange.AddCustomAlteration(f => f + rangeIncreaseValue, 1, "RangeEphemeral");
                         Destroy(bulletComponent.gameObject);
                         break;
                     case AttackBonusType.MOVESPEED:
-                        Debug.LogError("Movespeed not implemented yet");
+                        CurrentMovespeedMax.AddCustomAlteration(f => f + moveSpeedIncreaseValue, 1, "SpeedEphemeral");
+                        CurrentMoveAcceleration.AddCustomAlteration(f => f + accelerationIncreaseValue, 1, "SpeedEphemeral");
+                        currentEphemeralSpeedDuration = baseEphemeralSpeedDuration;
+                        Destroy(bulletComponent.gameObject);
                         break;
                     default:
                         break;
