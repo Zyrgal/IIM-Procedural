@@ -288,7 +288,6 @@ GameObject:
   - component: {fileID: 4766563019477658466}
   - component: {fileID: 4766563019477658477}
   - component: {fileID: 1940373930646248325}
-  - component: {fileID: 7683913516666695157}
   m_Layer: 0
   m_Name: Turret
   m_TagString: Untagged
@@ -404,6 +403,7 @@ MonoBehaviour:
   attackDistance: 3.5
   attackCooldown: 0.8
   orientation: 1
+  isTurret: 1
   shotCount: 4
   shotInterval: 0.8
   timeBeforeThrowAttack: 3
@@ -420,33 +420,6 @@ SortingGroup:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_SortAtRoot: 0
---- !u!114 &7683913516666695157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4766563019477658476}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a10ad176194fd14439306a1e7ef4e8a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PathFinding:
-    HeuristicType: 1
-    MaxDistance: 0
-    PassableDetectionMode: 1
-    RaycastDetectionLayerMask:
-      serializedVersion: 2
-      m_Bits: 4294967295
-    TilemapGroup: {fileID: 0}
-    AllowDiagonals: 1
-    AllowBlockedDestination: 0
-    m_cellSize: {x: 0, y: 0}
-  ComputeMode: 0
-  AsyncCoroutineIterations: 20
-  ReachNodeDistance: 0.1
-  showGizmos: 1
 --- !u!1 &4961142289299540408
 GameObject:
   m_ObjectHideFlags: 0
