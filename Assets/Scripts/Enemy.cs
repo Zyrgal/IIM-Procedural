@@ -75,6 +75,8 @@ public class Enemy : MonoBehaviour
 
     private float lastAttackTime = float.MinValue;
 
+    [SerializeField] private bool isTurret;
+
     [Header("Fire")]
     [SerializeField] private int shotCount = 3;
     [SerializeField] private float shotInterval = 0.8f;
@@ -136,7 +138,9 @@ public class Enemy : MonoBehaviour
 
         //if (CanFire()) UpdateState();
 
-        UpdateAI();
+        if (!isTurret)
+            UpdateAI();
+        else UpdateTurret();
     }
 
     public bool CanFire()
@@ -223,6 +227,27 @@ public class Enemy : MonoBehaviour
         {
             _direction = Vector2.zero;
         }
+    }
+
+    private void UpdateTurret()
+    {
+        Vector2 enemyToPlayer = (Player.Instance.transform.position - transform.position);
+
+        float angleToTarget = Mathf.Atan2(enemyToPlayer.y, enemyToPlayer.x) * Mathf.Rad2Deg;
+
+        if (Player.Instance.Room != _room)
+            return;
+        
+        elapsetimeSinceCanFire -= Time.deltaTime;
+
+        SetState(STATE.ATTACKING);
+        
+        if (!CanFire())
+            return;
+
+        SetState(STATE.ATTACKING);
+        Attack();
+        UpdateState();
     }
 
     /// <summary>
@@ -319,14 +344,20 @@ public class Enemy : MonoBehaviour
         if (attackPrefab == null)
             return;
 
-        Vector2 directionToShoot = (Player.Instance.transform.position - transform.position);
-        float angle = Vector3.Angle(Vector3.right, directionToShoot);
-        if (Player.Instance.transform.position.y < transform.position.y) angle *= -1;
-        Quaternion bulletRotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        if (!isTurret)
+        {
+            Vector2 directionToShoot = (Player.Instance.transform.position - transform.position);
+            float angle = Vector3.Angle(Vector3.right, directionToShoot);
+            if (Player.Instance.transform.position.y < transform.position.y) angle *= -1;
+            Quaternion bulletRotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
-        // transform used for spawn is attackSpawnPoint.transform if attackSpawnPoint is not null. Else it's transform.
-        //Transform spawnTransform = attackSpawnPoint ? attackSpawnPoint.transform : transform;
-        GameObject.Instantiate(attackPrefab, attackSpawnPoint.transform.position, bulletRotation);
+
+            // transform used for spawn is attackSpawnPoint.transform if attackSpawnPoint is not null. Else it's transform.
+            //Transform spawnTransform = attackSpawnPoint ? attackSpawnPoint.transform : transform;
+            GameObject.Instantiate(attackPrefab, attackSpawnPoint.transform.position, bulletRotation);
+        }
+        else
+            GameObject.Instantiate(attackPrefab, attackSpawnPoint.transform.position, attackSpawnPoint.transform.rotation);
     }
     private bool ShootAvailable()
     {
