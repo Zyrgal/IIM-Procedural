@@ -205,14 +205,19 @@ public class DungeonGenerator : MonoBehaviour
             emptySlots.AddRange(GetEmptyNeighboors(node.Position, PathType.Other));
 
         // Key room
-        emptySlots = emptySlots.OrderBy(e => GetNeighboors(e).Count).ToList();
-        AddNode(emptySlots[0], NodeType.Key);
-        emptySlots.RemoveAt(0);
+        emptySlots = emptySlots.OrderByDescending(e => GetNeighboors(e).Count).ToList();
+        AddNode(emptySlots[emptySlots.Count - 1], NodeType.Key);
+        emptySlots.RemoveAt(emptySlots.Count - 1);
+
+        // Treasure room
+        AddNode(emptySlots[emptySlots.Count - 1], NodeType.Treasure);
+        emptySlots.RemoveAt(emptySlots.Count - 1);
 
         // Secret room
         emptySlots = emptySlots.OrderByDescending(e => GetAllNeighboors(e).Count).ToList();
         AddNode(emptySlots[0], NodeType.Secret);
         emptySlots.RemoveAt(0);
+
 
         yield return null;
     }
@@ -420,6 +425,11 @@ public class DungeonGenerator : MonoBehaviour
                     //room = secretRooms[Random.Range(0, secretRooms.Count)];
                     break;
 
+                case NodeType.Treasure:
+                    room = basicRooms[Random.Range(0, basicRooms.Count)];
+                    //room = treasureRooms[Random.Range(0, treasureRooms.Count)];
+                    break;
+
                 // Basic/Default rooms
                 case NodeType.MainPath:
                 case NodeType.Path:
@@ -480,6 +490,9 @@ public class DungeonGenerator : MonoBehaviour
                     break;
                 case NodeType.Key:
                     Gizmos.color = Color.magenta;
+                    break;
+                case NodeType.Treasure:
+                    Gizmos.color = Color.yellow;
                     break;
                 case NodeType.End:
                     Gizmos.color = Color.red;
@@ -577,6 +590,7 @@ public enum NodeType
     Center,
     Secret,
     Key,
+    Treasure,
 }
 
 public enum ConnectionType
