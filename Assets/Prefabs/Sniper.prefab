@@ -299,7 +299,8 @@ MonoBehaviour:
     friction: 0
   attackPrefab: {fileID: 2185964762067344080, guid: 02db7d9e68915724da614f8b3986ae28,
     type: 3}
-  attackSpawnPoint: {fileID: 4766563018300211270}
+  attackSpawnPoint:
+  - {fileID: 4766563018300211270}
   attackWarmUp: 1
   attackDistance: 20
   attackCooldown: 0.8
