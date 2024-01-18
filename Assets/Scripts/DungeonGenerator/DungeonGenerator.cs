@@ -10,14 +10,14 @@ using UnityEditor;
 
 public class DungeonGenerator : MonoBehaviour
 {
-    public Vector2Int mainPathLength = new Vector2Int(5, 10);
+    public List<GenerationPreset> generationPresets = new List<GenerationPreset>();
+    public int difficulty = 0;
+    public int maxAttempts;
+    public int nodeMaxAttempts;
+    public Vector2Int roomSize;
+
     private Vector2Int secondaryPathLength;
     private int numberOfSecondaryPaths;
-    public int width = 10;
-    public int height = 10;
-    public int maxAttempts = 5;
-    public int nodeMaxAttempts = 5;
-    public Vector2Int roomSize = new Vector2Int(11, 9);
 
     public float generationDelay = 0.1f;
 
@@ -41,6 +41,9 @@ public class DungeonGenerator : MonoBehaviour
 
     public IEnumerator GenerateDungeon()
     {
+        if (difficulty >= generationPresets.Count)
+            difficulty = generationPresets.Count - 1;
+
         int attempts = 0;
         while (attempts < maxAttempts)
         {
@@ -49,7 +52,7 @@ public class DungeonGenerator : MonoBehaviour
 
             yield return StartCoroutine(CreateMainPath());
 
-            if (nodes.Count() >= mainPathLength.x)
+            if (nodes.Count() >= generationPresets[difficulty].mainPathLength.x)
             {
                 yield return StartCoroutine(CreateSecondaryPaths());
                 yield return StartCoroutine(ApplyAdditionalRules());
@@ -78,8 +81,10 @@ public class DungeonGenerator : MonoBehaviour
     private IEnumerator CreateMainPath()
     {
         // Create Start node
-        int pathLength = Random.Range(mainPathLength.x, mainPathLength.y);
-        Node startNode = new Node(0, 0, NodeType.Start);
+        int pathLength = Random.Range(generationPresets[difficulty].mainPathLength.x, generationPresets[difficulty].mainPathLength.y);
+        int x = 0; // Random.Range(-generationPresets[difficulty].width / 2, generationPresets[difficulty].width / 2);
+        int y = 0; // Random.Range(-generationPresets[difficulty].height/ 2, generationPresets[difficulty].height / 2);
+        Node startNode = new Node(x, y, NodeType.Start);
         nodes.Add(startNode);
 
         // Generate main path
@@ -210,13 +215,13 @@ public class DungeonGenerator : MonoBehaviour
 
         // Key room
         emptySlots = emptySlots.OrderByDescending(e => GetNeighboors(e).Count).ToList();
-        AddNode(emptySlots[emptySlots.Count - 1], NodeType.Key);
+        AddNode(GetDeadEnd(), NodeType.Key);
         emptySlots.RemoveAt(emptySlots.Count - 1);
 
         yield return new WaitForSeconds(generationDelay);
 
         // Treasure room
-        AddNode(emptySlots[emptySlots.Count - 1], NodeType.Treasure);
+        AddNode(GetDeadEnd(), NodeType.Treasure);
         emptySlots.RemoveAt(emptySlots.Count - 1);
 
         yield return new WaitForSeconds(generationDelay);
@@ -267,7 +272,7 @@ public class DungeonGenerator : MonoBehaviour
     private bool IsSlotValid(Vector2 position, PathType pathType)
     {
         // Check if the node is within the bounds of the dungeon
-        if (!IsWithinBounds(position))
+        if (pathType != PathType.Other && !IsWithinBounds(position))
             return false;
 
         // Check if the slot is not at the same position as another existing node
@@ -289,7 +294,7 @@ public class DungeonGenerator : MonoBehaviour
     private bool IsWithinBounds(Vector2 position)
     {
         // Implement the logic to check if the position is within the bounds of the dungeon
-        return Mathf.Abs(position.x) <= width / 2 && Mathf.Abs(position.y) <= height / 2;
+        return Mathf.Abs(position.x) <= generationPresets[difficulty].width / 2 && Mathf.Abs(position.y) <= generationPresets[difficulty].height / 2;
     }
 
     private bool IsNodeOverlap(Vector2 position)
@@ -343,6 +348,20 @@ public class DungeonGenerator : MonoBehaviour
             neighboors.Add(position + Vector2.left);
 
         return neighboors;
+    }
+
+    private Vector2 GetDeadEnd()
+    {
+        List<Vector2> possibleSlots = new List<Vector2>();
+
+        foreach (var node in nodes)
+        {
+            if (node.type != NodeType.Path || node.type != NodeType.MainPath)
+
+            possibleSlots.AddRange(GetEmptyNeighboors(node.Position, PathType.Main));
+        }
+
+        return possibleSlots[Random.Range(0, possibleSlots.Count)];
     }
 
     private ConnectionType GetConnectionType(Vector2 position, Utils.ORIENTATION orientation)
@@ -568,10 +587,10 @@ public class DungeonGenerator : MonoBehaviour
 
         // Generation limits
         Gizmos.color = Color.black;
-        Gizmos.DrawCube(new Vector2(width / 2, height / 2) * roomSize, Vector2.one);
-        Gizmos.DrawCube(new Vector2(width / 2, -height / 2) * roomSize, Vector2.one);
-        Gizmos.DrawCube(new Vector2(-width / 2, height / 2) * roomSize, Vector2.one);
-        Gizmos.DrawCube(new Vector2(-width / 2, -height / 2) * roomSize, Vector2.one);
+        Gizmos.DrawCube(new Vector2(generationPresets[difficulty].width / 2, generationPresets[difficulty].height / 2) * roomSize, Vector2.one);
+        Gizmos.DrawCube(new Vector2(generationPresets[difficulty].width / 2, -generationPresets[difficulty].height / 2) * roomSize, Vector2.one);
+        Gizmos.DrawCube(new Vector2(-generationPresets[difficulty].width / 2, generationPresets[difficulty].height / 2) * roomSize, Vector2.one);
+        Gizmos.DrawCube(new Vector2(-generationPresets[difficulty].width / 2, -generationPresets[difficulty].height / 2) * roomSize, Vector2.one);
     }
 }
 
@@ -621,6 +640,21 @@ public class Connection
             return true;
         else
             return false;
+    }
+}
+
+[System.Serializable]
+public struct GenerationPreset
+{
+    public Vector2Int mainPathLength;
+    public int width;
+    public int height;
+
+    public GenerationPreset(Vector2Int mainPathLength)
+    {
+        this.mainPathLength = mainPathLength;
+        width = 8;
+        height = 8;
     }
 }
 
