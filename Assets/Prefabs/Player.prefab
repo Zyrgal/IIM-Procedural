@@ -73,8 +73,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 11e370da7721cdc42b28182c68ac3960, type: 3}
-  m_Color: {r: 0, g: 1, b: 0, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 3e81b851f703db14fb8e047c0b5d61f0, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -110,8 +110,8 @@ Transform:
   m_GameObject: {fileID: 3061304261252655527}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5, y: 0, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
+  m_LocalPosition: {x: 0.598, y: 0.048, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3061304262239656687}
@@ -157,8 +157,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 11e370da7721cdc42b28182c68ac3960, type: 3}
-  m_Color: {r: 0, g: 1, b: 0.073209524, a: 1}
+  m_Sprite: {fileID: 21300000, guid: ea9d55cec09583045807d01176b3e2c3, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -197,7 +197,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 5.49, y: 4.54, z: 0}
-  m_LocalScale: {x: 0.6, y: 0.6, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3061304261199345294}
@@ -270,6 +270,11 @@ MonoBehaviour:
   dashForce: 30
   baseDamage: 1
   baseRange: 1
+  baseEphemeralSpeedDuration: 0
+  attackIncreaseValue: 0
+  rangeIncreaseValue: 0
+  moveSpeedIncreaseValue: 0
+  accelerationIncreaseValue: 0
   attackPrefab: {fileID: 2185964762067344080, guid: fedea07bedcd0dc4b8633fc878bfdc59,
     type: 3}
   attackSpawnPoint: {fileID: 3061304261252655527}
@@ -354,4 +359,4 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.25
+  m_Radius: 0.11
