@@ -35,6 +35,23 @@ public class Room : MonoBehaviour {
     }
 
     /// <summary>
+    /// Get a list of doors in a room given a local offset in index coordinate for room with size greater than one.
+    /// </summary>
+    public List<Door> GetDoors(Vector2Int offset)
+    {
+        Vector2Int doorPosition = position + offset;
+        List<Door> doors = new List<Door>();
+        foreach (Door door in GetDoors())
+        {
+            if (doorPosition == doorPosition + GetPositionOffset(door.transform.position))
+            {
+                doors.Add(door);
+            }
+        }
+        return doors;
+    }
+
+    /// <summary>
     /// Returns the min and max tiles positions of room in local-space
     /// </summary>
     public void GetLocalTileBounds(out Vector2Int outMin, out Vector2Int outMax)

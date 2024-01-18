@@ -21,8 +21,8 @@ public class DungeonGenerator : MonoBehaviour
 
     public float generationDelay = 0.1f;
 
-    [HideInInspector] public List<Node> nodes;
-    [HideInInspector] public List<Connection> connections;
+    public List<Node> nodes;
+    public List<Connection> connections;
 
     [Header("Rooms")]
     public List<Room> basicRooms;
@@ -32,6 +32,7 @@ public class DungeonGenerator : MonoBehaviour
     public List<Room> bigRooms;
     public List<Room> keyRooms;
     public List<Room> secretRooms;
+    public List<Room> itemRooms;
 
     private void Start()
     {
@@ -48,7 +49,7 @@ public class DungeonGenerator : MonoBehaviour
 
             yield return StartCoroutine(CreateMainPath());
 
-            if (nodes.Count() >= mainPathLength.x && nodes.Count() <= mainPathLength.y)
+            if (nodes.Count() >= mainPathLength.x)
             {
                 yield return StartCoroutine(CreateSecondaryPaths());
                 yield return StartCoroutine(ApplyAdditionalRules());
@@ -170,7 +171,7 @@ public class DungeonGenerator : MonoBehaviour
             case NodeType.Start:
             case NodeType.MainPath:
             case NodeType.Path:
-            case NodeType.Fusion:
+            case NodeType.FourTile:
             case NodeType.Center:
             case NodeType.Key:
             default:
@@ -199,24 +200,58 @@ public class DungeonGenerator : MonoBehaviour
         nodes.RemoveAll(e => e.type == NodeType.Center);
         connections.RemoveAll(e => e.fromNode.type == NodeType.Center || e.toNode.type == NodeType.Center);
 
+        yield return new WaitForSeconds(generationDelay);
+
         // Get all the available slots
         List<Vector2> emptySlots = new List<Vector2>(); 
         foreach (var node in nodes)
             emptySlots.AddRange(GetEmptyNeighboors(node.Position, PathType.Other));
+        emptySlots = emptySlots.Distinct().ToList();
 
         // Key room
         emptySlots = emptySlots.OrderByDescending(e => GetNeighboors(e).Count).ToList();
         AddNode(emptySlots[emptySlots.Count - 1], NodeType.Key);
         emptySlots.RemoveAt(emptySlots.Count - 1);
 
+        yield return new WaitForSeconds(generationDelay);
+
         // Treasure room
         AddNode(emptySlots[emptySlots.Count - 1], NodeType.Treasure);
         emptySlots.RemoveAt(emptySlots.Count - 1);
+
+        yield return new WaitForSeconds(generationDelay);
 
         // Secret room
         emptySlots = emptySlots.OrderByDescending(e => GetAllNeighboors(e).Count).ToList();
         AddNode(emptySlots[0], NodeType.Secret);
         emptySlots.RemoveAt(0);
+
+        yield return new WaitForSeconds(generationDelay);
+
+        // Fuse pack of 4 rooms
+        // C'est pas giga beau mais time
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            if (nodes[i].type == NodeType.MainPath || nodes[i].type != NodeType.Path)
+                continue;
+
+            Node bottomLeft = nodes[i];
+
+            Node topLeft = nodes.Find(e => (e.type == NodeType.MainPath || e.type == NodeType.Path) && e.Position == bottomLeft.Position + Vector2.up);
+            Node bottomRight = nodes.Find(e => (e.type == NodeType.MainPath || e.type == NodeType.Path) && e.Position == bottomLeft.Position + Vector2.right);
+            Node topRight = nodes.Find(e => (e.type == NodeType.MainPath || e.type == NodeType.Path) && e.Position == bottomLeft.Position + Vector2.up + Vector2.right);
+
+            if (topLeft != null && bottomRight != null && topRight != null)
+            {
+                bottomLeft.type = NodeType.FourTile;
+                nodes.Remove(topLeft);
+                nodes.Remove(bottomRight);
+                nodes.Remove(topRight);
+
+                i= 0;
+                yield return new WaitForSeconds(generationDelay);
+            }
+        }
 
 
         yield return null;
@@ -275,9 +310,7 @@ public class DungeonGenerator : MonoBehaviour
 
     private bool HasEigthNeighboors(Vector2 position)
     {
-        return nodes.Where(node => node.Position != position &&
-                                   Mathf.Abs(node.x - position.x) <= 1 && 
-                                   Mathf.Abs(node.y - position.y) <= 1).Count() == 8;
+        return GetAllNeighboors(position).Count == 8;
     }
     #endregion
 
@@ -343,7 +376,7 @@ public class DungeonGenerator : MonoBehaviour
 
         return ConnectionType.None;
     }
-
+    
     private Vector2 GetRandomDirection()
     {
         int randomIndex = Random.Range(0, 4);
@@ -410,8 +443,8 @@ public class DungeonGenerator : MonoBehaviour
                     break;
 
                 // 4 tile rooms
-                case NodeType.Fusion:   
-                    room = basicRooms[Random.Range(0, basicRooms.Count)];
+                case NodeType.FourTile:   
+                    room = bigRooms[Random.Range(0, bigRooms.Count)];
                     break;
 
                 // Key rooms
@@ -421,13 +454,11 @@ public class DungeonGenerator : MonoBehaviour
 
                 // Secret rooms
                 case NodeType.Secret:
-                    room = basicRooms[Random.Range(0, basicRooms.Count)];
-                    //room = secretRooms[Random.Range(0, secretRooms.Count)];
+                    room = secretRooms[Random.Range(0, secretRooms.Count)];
                     break;
 
                 case NodeType.Treasure:
-                    room = basicRooms[Random.Range(0, basicRooms.Count)];
-                    //room = treasureRooms[Random.Range(0, treasureRooms.Count)];
+                    room = itemRooms[Random.Range(0, itemRooms.Count)];
                     break;
 
                 // Basic/Default rooms
@@ -445,22 +476,28 @@ public class DungeonGenerator : MonoBehaviour
 
             // Setup the doors (there is a lot of optimization to be made concerning the connections and doors, but time)
             // Doors will not be setup properly without being in runtime
-            foreach (var door in room.GetDoors())
+            for (int x = 0; x < room.size.x; x++)
             {
-                switch (GetConnectionType(node.Position, door.Orientation))
+                for (int y = 0; y < room.size.y; y++)
                 {
-                    case ConnectionType.None:
-                        door.SetState(Door.STATE.WALL);
-                        break;
-                    case ConnectionType.Open:
-                        door.SetState(Door.STATE.OPEN);
-                        break;
-                    case ConnectionType.NeedKey:
-                        door.SetState(Door.STATE.CLOSED);
-                        break;
-                    case ConnectionType.Hidden:
-                        door.SetState(Door.STATE.SECRET);
-                        break;
+                    foreach (var door in room.GetDoors(new Vector2Int(x, y)))
+                    {
+                        switch (GetConnectionType(node.Position + new Vector2Int(x, y), door.Orientation))
+                        {
+                            case ConnectionType.None:
+                                door.SetState(Door.STATE.WALL);
+                                break;
+                            case ConnectionType.Open:
+                                door.SetState(Door.STATE.OPEN);
+                                break;
+                            case ConnectionType.NeedKey:
+                                door.SetState(Door.STATE.CLOSED);
+                                break;
+                            case ConnectionType.Hidden:
+                                door.SetState(Door.STATE.SECRET);
+                                break;
+                        }
+                    }
                 }
             }
         }
@@ -469,6 +506,7 @@ public class DungeonGenerator : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Vector2 roomGizmoSize = new Vector2(5.5f, 4.5f);
+        Vector2 bigRoomGizmoSize = roomGizmoSize * 3;
         float connectionGizmoSize = 0.5f;
 
         // Room visuals
@@ -485,6 +523,9 @@ public class DungeonGenerator : MonoBehaviour
                 case NodeType.Path:
                     Gizmos.color = Color.cyan;
                     break;
+                case NodeType.FourTile:
+                    Gizmos.color = Color.blue;
+                    break;
                 case NodeType.Secret:
                     Gizmos.color = Color.white;
                     break;
@@ -498,8 +539,12 @@ public class DungeonGenerator : MonoBehaviour
                     Gizmos.color = Color.red;
                     break;
             }
+
             Vector2 pos = node.Position * roomSize + roomSize / 2;
-            Gizmos.DrawCube(pos, roomGizmoSize);
+            if (node.type == NodeType.FourTile)
+                Gizmos.DrawCube(pos + roomSize / 2, bigRoomGizmoSize);
+            else
+                Gizmos.DrawCube(pos, roomGizmoSize);
         }
 
         // Connection visuals
@@ -586,7 +631,7 @@ public enum NodeType
     MainPath,
     Path,
     End,
-    Fusion,
+    FourTile,
     Center,
     Secret,
     Key,
@@ -707,6 +752,14 @@ public class DungeonGeneratorEditor : Editor
         {
             var path = AssetDatabase.GUIDToAssetPath(guid);
             source.secretRooms.Add(AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<Room>());
+        }
+
+        string pathItem = "Assets/Prefabs/Rooms/ItemRooms";
+        source.itemRooms.Clear();
+        foreach (var guid in AssetDatabase.FindAssets("t:Prefab", new string[] { pathItem }))
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            source.itemRooms.Add(AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<Room>());
         }
     }
 }
