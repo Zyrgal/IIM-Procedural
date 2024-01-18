@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
     {
         public float speedMax = 2.0f;
         public float acceleration = 12.0f;
-        public float friction = 12.0f;
+        public float decceleration = 12.0f;
     }
 
     // Possible orientation for player aiming : 4 direction, 8 direction (for keyboards or D-pads) or free direction (for analogic joysticks)
@@ -59,8 +59,10 @@ public class Player : MonoBehaviour
     public MovementParameters stunnedMovement = new MovementParameters();
     public MovementParameters dashMovement = new MovementParameters();
 
+    private float currentSpeed;
     private Rigidbody2D _body = null;
     private Vector2 _direction = Vector2.zero;
+    private float inputPower = 0;
     private MovementParameters _currentMovement = null;
 
     [Space(10)]
@@ -86,12 +88,18 @@ public class Player : MonoBehaviour
     public Alterable2<float> CurrentRange { get; private set; }
     public Alterable2<float> CurrentMovespeedMax { get; private set; }
     public Alterable2<float> CurrentMoveAcceleration { get; private set; }
+    public Alterable2<float> CurrentDashSpeedMax { get; private set; }
+    public Alterable2<float> CurrentDashAcceleration { get; private set; }
 
     [Header("Values for stats increase")]
     [SerializeField] private int attackIncreaseValue;
     [SerializeField] private int rangeIncreaseValue;
     [SerializeField] private int moveSpeedIncreaseValue;
     [SerializeField] private int accelerationIncreaseValue;
+    [SerializeField] private int permanentMoveSpeedIncreaseValue;
+    [SerializeField] private int permanentAccelerationIncreaseValue;
+    [SerializeField] private int dashSpeedIncreaseValue;
+    [SerializeField] private int dashAccelerationIncreaseValue;
 
     public GameObject attackPrefab = null;
     public GameObject attackSpawnPoint = null;
@@ -130,6 +138,8 @@ public class Player : MonoBehaviour
         CurrentRange = new Alterable2<float>(baseRange);
         CurrentMovespeedMax = new Alterable2<float>(defaultMovement.speedMax);
         CurrentMoveAcceleration = new Alterable2<float>(defaultMovement.acceleration);
+        CurrentDashAcceleration = new Alterable2<float>(dashMovement.acceleration);
+        CurrentDashSpeedMax = new Alterable2<float>(dashMovement.acceleration);
     }
 
     private void Update()
@@ -226,24 +236,29 @@ public class Player : MonoBehaviour
     {
         if (CanMove())
         {
-            _direction = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-            if (_direction.magnitude < controllerDeadZone)
+            float x = Input.GetAxis("Horizontal");
+            float y = Input.GetAxis("Vertical");
+
+            bool isMoving = (x != 0 || y != 0);
+
+            Vector2 input = (Vector2.right * x) + (Vector2.up * y);
+
+            if (isMoving)
             {
-                _direction = Vector2.zero;
-            }
-            else
-            {
-                _direction.Normalize();
-            }
+                _direction = input;
+            }     
+
+            if (input.magnitude < controllerDeadZone)
+                input = Vector2.zero;
+
+            inputPower = input.magnitude;
+
             if (Input.GetButtonDown("Fire1"))
-            {
                 Attack();
-            }
         }
         else
-        {
-            _direction = Vector2.zero;
-        }
+            inputPower = 0;
+
     }
 
     /// <summary>
@@ -279,11 +294,6 @@ public class Player : MonoBehaviour
     /// </summary>    
     private void SetState(STATE state)
     {
-        // Exiting previous state
-        // switch (_state)
-        //{
-        //}
-
         _state = state;
 
         // Entering new state
@@ -318,17 +328,11 @@ public class Player : MonoBehaviour
             Vector2 moveDirection;
 
             if (!Mathf.Approximately(moveX, 0) && !Mathf.Approximately(moveY, 0))
-            {
                 moveDirection = new Vector2(moveX, moveY).normalized;
-            }
             else
-            {
                 moveDirection = transform.right;
-            }
 
             _body.velocity = new Vector2(moveDirection.x * dashForce, moveDirection.y * dashForce);
-
-            //Debug.Log(Time.frameCount + " time = " + Time.time + " currentDashTimer " + currentDashTimer);
 
             currentDashTimer -= Time.deltaTime;
 
@@ -347,36 +351,24 @@ public class Player : MonoBehaviour
     /// </summary>
     void FixedUpdateMovement()
     {
-
-        if (_direction.magnitude > Mathf.Epsilon) // magnitude > 0
+        float frictionMagnitude = _currentMovement.decceleration * Time.fixedDeltaTime;
+        if (inputPower <= 0)
         {
-            // If direction magnitude > 0, Accelerate in direction, then clamp velocity to max speed. Do not apply friction if character is moving toward a direction.
-            if (_currentMovement == defaultMovement)
-            {
-                _body.velocity += _direction * CurrentMoveAcceleration.CalculValue() * Time.fixedDeltaTime;
-                _body.velocity = Vector2.ClampMagnitude(_body.velocity, CurrentMovespeedMax.CalculValue());
-                transform.eulerAngles = new Vector3(0.0f, 0.0f, ComputeOrientationAngle(_direction));
-            }
-            else
-            {
-                _body.velocity += _direction * _currentMovement.acceleration * Time.fixedDeltaTime;
-                _body.velocity = Vector2.ClampMagnitude(_body.velocity, _currentMovement.speedMax);
-                transform.eulerAngles = new Vector3(0.0f, 0.0f, ComputeOrientationAngle(_direction));
-            }
+            currentSpeed = Mathf.Lerp(currentSpeed, 0, frictionMagnitude);
         }
         else
         {
-            // If direction magnitude == 0, Apply friction
-            float frictionMagnitude = _currentMovement.friction * Time.fixedDeltaTime;
-            if (_body.velocity.magnitude > frictionMagnitude)
-            {
-                _body.velocity -= _body.velocity.normalized * frictionMagnitude;
-            }
+            if (_currentMovement == defaultMovement)
+                currentSpeed = Mathf.Lerp(currentSpeed, CurrentMovespeedMax.CalculValue(), CurrentMoveAcceleration.CalculValue() * Time.fixedDeltaTime);
+            else if (_currentMovement == dashMovement)
+                currentSpeed = Mathf.Lerp(currentSpeed, CurrentDashSpeedMax.CalculValue(), CurrentDashAcceleration.CalculValue() * Time.fixedDeltaTime);
             else
-            {
-                _body.velocity = Vector2.zero;
-            }
+                currentSpeed = Mathf.Lerp(currentSpeed, CurrentMovespeedMax.CalculValue(), CurrentMoveAcceleration.CalculValue() * Time.fixedDeltaTime);
+
+            transform.eulerAngles = new Vector3(0.0f, 0.0f, ComputeOrientationAngle(_direction));
         }
+
+        _body.velocity = _direction.normalized * currentSpeed;
     }
 
     /// <summary>
@@ -556,8 +548,11 @@ public class Player : MonoBehaviour
         }
         else
         {
-            _currentMovement.speedMax++;
-            _currentMovement.acceleration++;
+            CurrentMovespeedMax.AddCustomAlteration(f => f + permanentMoveSpeedIncreaseValue, 1, "SpeedPermanent");
+            CurrentMoveAcceleration.AddCustomAlteration(f => f + permanentAccelerationIncreaseValue, 1, "AccelerationPermanent");
+
+            //_currentMovement.speedMax++;
+            //_currentMovement.acceleration++;
         }
     }
 
@@ -596,7 +591,9 @@ public class Player : MonoBehaviour
                         break;
                     case AttackBonusType.MOVESPEED:
                         CurrentMovespeedMax.AddCustomAlteration(f => f + moveSpeedIncreaseValue, 1, "SpeedEphemeral");
-                        CurrentMoveAcceleration.AddCustomAlteration(f => f + accelerationIncreaseValue, 1, "SpeedEphemeral");
+                        CurrentMoveAcceleration.AddCustomAlteration(f => f + accelerationIncreaseValue, 1, "AccelerationEphemeral");
+                        CurrentDashAcceleration.AddCustomAlteration(f => f + dashSpeedIncreaseValue, 1, "DashAccelerationEphemeral");
+                        CurrentDashSpeedMax.AddCustomAlteration(f => f + dashSpeedIncreaseValue, 1, "DashSpeedEphemeral");
                         currentEphemeralSpeedDuration = baseEphemeralSpeedDuration;
                         Destroy(bulletComponent.gameObject);
                         break;
