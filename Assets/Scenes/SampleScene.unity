@@ -350,13 +350,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 855497f44a3847f44a372916b772077c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainPathLength: {x: 5, y: 6}
-  width: 4
-  height: 4
-  maxAttempts: 10
+  generationPresets:
+  - mainPathLength: {x: 5, y: 8}
+    width: 7
+    height: 7
+  difficulty: 0
+  maxAttempts: 50
   nodeMaxAttempts: 10
   roomSize: {x: 11, y: 9}
-  generationDelay: 0
+  generationDelay: 0.01
   nodes:
   - x: 0
     y: 0

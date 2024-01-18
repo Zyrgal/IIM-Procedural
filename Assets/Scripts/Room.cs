@@ -20,6 +20,8 @@ public class Room : MonoBehaviour {
     private TilemapGroup _tilemapGroup;
 	private List<Door> doors = null;
     private bool _isInitialized = false;
+    private Transform enemyParent;
+
     public static List<Room> allRooms { get; private set; } = new List<Room>();
 
 
@@ -43,7 +45,7 @@ public class Room : MonoBehaviour {
         List<Door> doors = new List<Door>();
         foreach (Door door in GetDoors())
         {
-            if (doorPosition == doorPosition + GetPositionOffset(door.transform.position))
+            if (doorPosition == position + GetPositionOffset(door.transform.position))
             {
                 doors.Add(door);
             }
@@ -144,7 +146,7 @@ public class Room : MonoBehaviour {
     /// </summary>
     public Door GetDoor(Utils.ORIENTATION orientation)
     {
-        Debug.Assert(size != Vector2Int.one, "GetDoor(orientation) should only be used on room of size {1,1}. In other cases, please use: GetDoor(orientation,offset)");        
+        Debug.Assert(size == Vector2Int.one, "GetDoor(orientation) should only be used on room of size {1,1}. In other cases, please use: GetDoor(orientation,offset)");        
         return GetDoor(orientation, Vector2Int.zero);
     }
 
@@ -157,7 +159,7 @@ public class Room : MonoBehaviour {
         List<Door> doors = GetDoors();
         foreach (Door door in doors)
         {
-            if (doorPosition == doorPosition + GetPositionOffset(door.transform.position)
+            if (doorPosition == position + GetPositionOffset(door.transform.position)
                 && door.Orientation == orientation)
             {
                 return door;
@@ -176,13 +178,25 @@ public class Room : MonoBehaviour {
 	void Start()
 	{
 		RefreshDoors();
+
+        enemyParent = transform.Find("Props");
+
         if (isStartRoom)
         {
+            Player.Instance.transform.position = transform.position + GetLocalBounds().center;
             Player.Instance.EnterRoom(this);
         }
     }
 
-	private void RefreshDoors()
+    private void Update()
+    {
+        if (Player.Instance.Room == this)
+        {
+
+        }
+    }
+
+    private void RefreshDoors()
 	{
 		if(doors == null) {
             doors = new List<Door>();
