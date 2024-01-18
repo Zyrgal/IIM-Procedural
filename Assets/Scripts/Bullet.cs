@@ -12,9 +12,9 @@ public enum AttackType
 
 public enum AttackBonusType
 {
-    DAMAGE,
-    RANGE,
-    MOVESPEED,
+    DAMAGE = 0,
+    RANGE = 1,
+    MOVESPEED = 2,
 }
 
 public struct AttackData
@@ -35,13 +35,10 @@ public class Bullet : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
-        int rand = Random.Range(0, System.Enum.GetValues(typeof(AttackBonusType)).Length);
-        attackData.attackType = (AttackType)rand;
-        if (rand == 1)
-        {
-            SetAttackBonusType();
-            SetBulletColor();
-        }
+        attackData.attackType = (AttackType)1;
+
+        SetAttackBonusType();
+        SetBulletColor();
     }
 
     private void SetAttackBonusType()
@@ -75,7 +72,6 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log(collision.name);
         if (collision.name == "Wall" || collision.name == "Door" || collision.name == "0_0")
         {
             Destroy(gameObject);
