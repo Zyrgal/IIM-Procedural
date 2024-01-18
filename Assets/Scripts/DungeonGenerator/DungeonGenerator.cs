@@ -41,6 +41,9 @@ public class DungeonGenerator : MonoBehaviour
 
     public IEnumerator GenerateDungeon()
     {
+        if (difficulty >= generationPresets.Count)
+            difficulty = generationPresets.Count - 1;
+
         int attempts = 0;
         while (attempts < maxAttempts)
         {
