@@ -92,14 +92,16 @@ public class Player : MonoBehaviour
     public Alterable2<float> CurrentDashAcceleration { get; private set; }
 
     [Header("Values for stats increase")]
-    [SerializeField] private int attackIncreaseValue;
-    [SerializeField] private int rangeIncreaseValue;
-    [SerializeField] private int moveSpeedIncreaseValue;
-    [SerializeField] private int accelerationIncreaseValue;
-    [SerializeField] private int permanentMoveSpeedIncreaseValue;
-    [SerializeField] private int permanentAccelerationIncreaseValue;
-    [SerializeField] private int dashSpeedIncreaseValue;
-    [SerializeField] private int dashAccelerationIncreaseValue;
+    [SerializeField] private int attackIncreaseValue = 1;
+    [SerializeField] private int rangeIncreaseValue = 1;
+    [SerializeField] private int moveSpeedIncreaseValue = 1;
+    [SerializeField] private int accelerationIncreaseValue = 1;
+    [SerializeField] private int permanentMoveSpeedIncreaseValue = 1;
+    [SerializeField] private int permanentAccelerationIncreaseValue = 1;
+    [SerializeField] private int dashSpeedIncreaseValue = 1;
+    [SerializeField] private int dashAccelerationIncreaseValue = 1;
+
+    [Header("Others")]
 
     public GameObject attackPrefab = null;
     public GameObject attackSpawnPoint = null;
