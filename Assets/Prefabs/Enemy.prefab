@@ -281,7 +281,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef68b37496ef62c449621d0c55f8ba31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  life: 2
+  life: 5
   invincibilityDuration: 0.2
   invincibilityBlinkPeriod: 0.2
   hitLayers:
