@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -103,6 +104,10 @@ public class Player : MonoBehaviour
 
     [Header("Others")]
 
+    [SerializeField] TextMeshProUGUI damageTXT;
+    [SerializeField] TextMeshProUGUI rangeTXT;
+    [SerializeField] TextMeshProUGUI speedTXT;
+
     public GameObject attackPrefab = null;
     public GameObject attackSpawnPoint = null;
     public float attackCooldown = 0.3f;
@@ -152,6 +157,7 @@ public class Player : MonoBehaviour
         UpdateState();
         UpdateInputs();
         UpdateRoom();
+        UpdateStatsText();
     }
 
     private void FixedUpdate()
@@ -187,6 +193,13 @@ public class Player : MonoBehaviour
             isDashing = true;
             currentDashTimer = dashDuration;
         }
+    }
+
+    private void UpdateStatsText()
+    {
+        damageTXT.text = CurrentDamage.CalculValue().ToString();
+        rangeTXT.text = CurrentRange.CalculValue().ToString();
+        speedTXT.text = CurrentMovespeedMax.CalculValue().ToString();
     }
 
     private void UpdateDashReadyVisual()
