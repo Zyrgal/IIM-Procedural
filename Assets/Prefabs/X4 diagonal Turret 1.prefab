@@ -62,68 +62,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4766563019477658464}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 45}
---- !u!1 &3866984122132160316
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3071490412160528272}
-  m_Layer: 0
-  m_Name: AttackSpawnPoint (2)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3071490412160528272
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3866984122132160316}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4766563019477658464}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
---- !u!1 &4766563018300211270
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4766563018300211268}
-  m_Layer: 0
-  m_Name: AttackSpawnPoint
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4766563018300211268
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4766563018300211270}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.5, y: 0, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4766563019477658464}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4766563019395885413
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,7 +135,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 630807072, guid: a0426054a75cf414e8d43607d1129b03, type: 3}
+  m_Sprite: {fileID: -980173739, guid: c408e0eae98620e4394a5ef67dd577b5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -289,7 +227,7 @@ GameObject:
   - component: {fileID: 4766563019477658477}
   - component: {fileID: 1940373930646248325}
   m_Layer: 0
-  m_Name: Turret
+  m_Name: X4 diagonal Turret 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -310,10 +248,6 @@ Transform:
   m_Children:
   - {fileID: 4766563019395885402}
   - {fileID: 4766563019399646910}
-  - {fileID: 4766563018300211268}
-  - {fileID: 1856210446393969662}
-  - {fileID: 3071490412160528272}
-  - {fileID: 5933365971616337183}
   - {fileID: 244070240055277717}
   - {fileID: 8049722361071583013}
   - {fileID: 3732560312982892319}
@@ -332,7 +266,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1000000
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 0
@@ -399,10 +333,6 @@ MonoBehaviour:
   attackPrefab: {fileID: 2185964762067344080, guid: 02db7d9e68915724da614f8b3986ae28,
     type: 3}
   attackSpawnPoint:
-  - {fileID: 4766563018300211270}
-  - {fileID: 9135219004374580192}
-  - {fileID: 3866984122132160316}
-  - {fileID: 4961142289299540408}
   - {fileID: 3568740806664473875}
   - {fileID: 1335709778460702304}
   - {fileID: 5316463114587810086}
@@ -412,10 +342,10 @@ MonoBehaviour:
   attackCooldown: 0.8
   orientation: 1
   isTurret: 1
-  shotCount: 4
+  shotCount: 1
   shotInterval: 0.8
   timeBeforeThrowAttack: 3
-  fireRate: 5
+  fireRate: 3
 --- !u!210 &1940373930646248325
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -428,37 +358,6 @@ SortingGroup:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_SortAtRoot: 0
---- !u!1 &4961142289299540408
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5933365971616337183}
-  m_Layer: 0
-  m_Name: AttackSpawnPoint (3)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5933365971616337183
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4961142289299540408}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: 0.7071068, w: -0.7071068}
-  m_LocalPosition: {x: 0, y: -0.5, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4766563019477658464}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 270}
 --- !u!1 &5316463114587810086
 GameObject:
   m_ObjectHideFlags: 0
@@ -521,34 +420,3 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4766563019477658464}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 135}
---- !u!1 &9135219004374580192
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1856210446393969662}
-  m_Layer: 0
-  m_Name: AttackSpawnPoint (1)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1856210446393969662
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9135219004374580192}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 1, w: 0}
-  m_LocalPosition: {x: -0.5, y: 0, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 4766563019477658464}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}

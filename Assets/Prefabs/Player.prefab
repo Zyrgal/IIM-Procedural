@@ -256,25 +256,29 @@ MonoBehaviour:
   defaultMovement:
     speedMax: 4
     acceleration: 18
-    friction: 3000
+    decceleration: 12
   stunnedMovement:
     speedMax: 2
     acceleration: 12
-    friction: 12
+    decceleration: 12
   dashMovement:
     speedMax: 20
     acceleration: 12
-    friction: 12
+    decceleration: 12
   dashReadyImage: {fileID: 0}
   dashDuration: 0.1
   dashForce: 30
   baseDamage: 1
   baseRange: 1
   baseEphemeralSpeedDuration: 0
-  attackIncreaseValue: 0
-  rangeIncreaseValue: 0
-  moveSpeedIncreaseValue: 0
+  attackIncreaseValue: 1
+  rangeIncreaseValue: 1
+  moveSpeedIncreaseValue: 1
   accelerationIncreaseValue: 0
+  permanentMoveSpeedIncreaseValue: 1
+  permanentAccelerationIncreaseValue: 1
+  dashSpeedIncreaseValue: 1
+  dashAccelerationIncreaseValue: 1
   attackPrefab: {fileID: 2185964762067344080, guid: fedea07bedcd0dc4b8633fc878bfdc59,
     type: 3}
   attackSpawnPoint: {fileID: 3061304261252655527}
