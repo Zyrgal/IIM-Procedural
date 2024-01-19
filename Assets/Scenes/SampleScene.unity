@@ -359,6 +359,7 @@ MonoBehaviour:
   nodeMaxAttempts: 10
   roomSize: {x: 11, y: 9}
   generationDelay: 0.01
+  minimap: {fileID: 2008571311}
   nodes:
   - x: 0
     y: 0
@@ -369,23 +370,32 @@ MonoBehaviour:
   - x: 2
     y: 0
     type: 2
-  - x: 2
-    y: -1
+  - x: 3
+    y: 0
     type: 2
-  - x: 2
-    y: -2
+  - x: 3
+    y: 1
     type: 2
-  - x: 1
-    y: -2
+  - x: 3
+    y: 2
+    type: 2
+  - x: 3
+    y: 3
     type: 4
   - x: 2
     y: 1
-    type: 8
+    type: 3
   - x: 1
-    y: 1
+    y: -1
+    type: 3
+  - x: 1
+    y: -2
+    type: 8
+  - x: 3
+    y: -1
     type: 9
-  - x: 0
-    y: 1
+  - x: 2
+    y: -1
     type: 7
   connections:
   - fromNode:
@@ -407,8 +417,8 @@ MonoBehaviour:
       type: 2
     type: 1
   - fromNode:
-      x: 2
-      y: -1
+      x: 3
+      y: 0
       type: 2
     toNode:
       x: 2
@@ -416,36 +426,54 @@ MonoBehaviour:
       type: 2
     type: 1
   - fromNode:
-      x: 2
-      y: -2
+      x: 3
+      y: 1
       type: 2
     toNode:
-      x: 2
-      y: -1
+      x: 3
+      y: 0
       type: 2
     type: 1
   - fromNode:
-      x: 1
-      y: -2
+      x: 3
+      y: 2
+      type: 2
+    toNode:
+      x: 3
+      y: 1
+      type: 2
+    type: 1
+  - fromNode:
+      x: 3
+      y: 3
       type: 4
     toNode:
-      x: 2
-      y: -2
+      x: 3
+      y: 2
       type: 2
     type: 2
   - fromNode:
       x: 2
       y: 1
-      type: 8
+      type: 3
     toNode:
       x: 2
       y: 0
       type: 2
     type: 1
   - fromNode:
-      x: 1
+      x: 2
       y: 1
-      type: 9
+      type: 3
+    toNode:
+      x: 3
+      y: 1
+      type: 2
+    type: 1
+  - fromNode:
+      x: 1
+      y: -1
+      type: 3
     toNode:
       x: 1
       y: 0
@@ -453,29 +481,47 @@ MonoBehaviour:
     type: 1
   - fromNode:
       x: 1
-      y: 1
-      type: 9
-    toNode:
-      x: 2
-      y: 1
+      y: -2
       type: 8
+    toNode:
+      x: 1
+      y: -1
+      type: 3
     type: 1
   - fromNode:
-      x: 0
-      y: 1
+      x: 3
+      y: -1
+      type: 9
+    toNode:
+      x: 3
+      y: 0
+      type: 2
+    type: 1
+  - fromNode:
+      x: 2
+      y: -1
       type: 7
     toNode:
-      x: 0
+      x: 2
       y: 0
-      type: 1
+      type: 2
     type: 3
   - fromNode:
-      x: 0
-      y: 1
+      x: 2
+      y: -1
       type: 7
     toNode:
       x: 1
-      y: 1
+      y: -1
+      type: 3
+    type: 3
+  - fromNode:
+      x: 2
+      y: -1
+      type: 7
+    toNode:
+      x: 3
+      y: -1
       type: 9
     type: 3
   basicRooms:
@@ -868,6 +914,18 @@ Transform:
   - {fileID: 232523174}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2008571311 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+    type: 3}
+  m_PrefabInstance: {fileID: 8292516848353153830}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19903c4e4e72b9b4694b08e9313d1743, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3061304261915543687
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -954,6 +1012,66 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1997484764}
     m_Modifications:
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: tiles.Array.data[0].image
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: tiles.Array.data[1].image
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: tiles.Array.data[2].image
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: tiles.Array.data[3].image
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: tiles.Array.data[4].image
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: tiles.Array.data[5].image
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: tiles.Array.data[6].image
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: tiles.Array.data[7].image
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: tiles.Array.data[8].image
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: tiles.Array.data[9].image
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: tiles.Array.data[10].image
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: tiles.Array.data[11].image
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7901033774428603941, guid: 047b3acfaf412a1408bfc228dda06de0,
         type: 3}
       propertyPath: m_Name

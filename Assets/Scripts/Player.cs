@@ -534,6 +534,8 @@ public class Player : MonoBehaviour
         _room = room;
         room.OnEnterRoom(previous);
 
+        DungeonGenerator.Minimap.Instance.EnterRoom(_room.position);
+
         //ApplyKnockBackCoroutine(1);
     }
     public void RandomUpgrade()
