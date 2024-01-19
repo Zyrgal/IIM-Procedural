@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3223747653449585897}
   - component: {fileID: 8641522590037848149}
   m_Layer: 0
-  m_Name: ExploredRoom
+  m_Name: MinimapTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
