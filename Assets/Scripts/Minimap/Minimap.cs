@@ -18,6 +18,11 @@ namespace DungeonGenerator
         public Sprite unexploredTile;
         public Sprite exploredTile;
 
+        public Color endTileColor;
+        public Color startTileColor;
+        public Color itemTileColor;
+        public Color keyTileColor;
+
         Vector2 tileSize = new Vector2(32, 32);
         Vector2 bigTileSize = new Vector2(64, 64);
 
@@ -36,40 +41,49 @@ namespace DungeonGenerator
             tiles.Clear();
 
 
-            GameObject tileObject;
             foreach (var node in nodes)
             {
+                Vector2 pos = node.Position * tileSize;
+                Vector2 size = tileSize;
+                GameObject tileObject = Instantiate(tilePrefab, transform);
+                tileObject.GetComponent<Image>().sprite = unexploredTile;
+
                 switch (node.type)
                 {
                     case NodeType.None:
                     case NodeType.Center:
                         continue;
-                    case NodeType.Start:
+
                     case NodeType.MainPath:
                     case NodeType.Path:
-                    case NodeType.End:
                     case NodeType.Secret:
-                    case NodeType.Key:
-                    case NodeType.Treasure:
                     default:
-                        Vector3 pos = node.Position * tileSize;
-                        tileObject = Instantiate(tilePrefab, transform);
-
-                        tileObject.GetComponent<Image>().sprite = unexploredTile;
-                        tileObject.GetComponent<RectTransform>().sizeDelta = tileSize;
-                        tileObject.GetComponent<RectTransform>().localPosition = pos;
                         break;
+
+                    case NodeType.Start:
+                        tileObject.GetComponent<Image>().color = startTileColor;
+                        break;
+
+                    case NodeType.End:
+                        tileObject.GetComponent<Image>().color = endTileColor;
+                        break;
+
+                    case NodeType.Key:
+                        tileObject.GetComponent<Image>().color = keyTileColor;
+                        break;
+
+                    case NodeType.Treasure:
+                        tileObject.GetComponent<Image>().color = itemTileColor;
+                        break;
+                        
                     case NodeType.FourTile:
-                        Vector3 posBig = node.Position * tileSize + new Vector2(16, 16);
-                        tileObject = Instantiate(tilePrefab, transform);
-
-                        tileObject.GetComponent<Image>().sprite = unexploredTile;
-                        tileObject.GetComponent<RectTransform>().sizeDelta = bigTileSize;
-                        tileObject.GetComponent<RectTransform>().localPosition = posBig;
-
+                        pos += new Vector2(16, 16);
+                        size = bigTileSize;
                         break;
                 }
 
+                tileObject.GetComponent<RectTransform>().sizeDelta = size;
+                tileObject.GetComponent<RectTransform>().localPosition = pos;
                 tiles.Add(new Tile(tileObject, node));
             }
 
