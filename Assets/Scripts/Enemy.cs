@@ -424,7 +424,7 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            if (attack != null && attack.knockbackDuration > 0.0f)
+            if (attack != null && attack.knockbackDuration > 0.0f && !isTurret)
             {
                 StartCoroutine(ApplyKnockBackCoroutine(attack.knockbackDuration, attack.transform.right * attack.knockbackSpeed));
             }
