@@ -339,6 +339,8 @@ GameObject:
   - component: {fileID: 7238262743126374075}
   - component: {fileID: 1802829429576497503}
   - component: {fileID: 4127291541087578927}
+  - component: {fileID: 315380144193420599}
+  - component: {fileID: 4068568655155205854}
   m_Layer: 0
   m_Name: 0_0
   m_TagString: Untagged
@@ -839,6 +841,10 @@ EdgeCollider2D:
   - {x: 8, y: 3}
   - {x: 9, y: 3}
   - {x: 9, y: 2}
+  - {x: 10, y: 2}
+  - {x: 10, y: 1}
+  - {x: 12, y: 1}
+  - {x: 12, y: 2}
   - {x: 13, y: 2}
   - {x: 13, y: 3}
   - {x: 14, y: 3}
@@ -982,11 +988,13 @@ EdgeCollider2D:
   m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0
   m_Points:
-  - {x: 7, y: 12}
   - {x: 7, y: 6}
-  - {x: 15, y: 6}
-  - {x: 15, y: 12}
-  - {x: 7, y: 12}
+  - {x: 9, y: 6}
+  - {x: 9, y: 5}
+  - {x: 6, y: 5}
+  - {x: 6, y: 7}
+  - {x: 7, y: 7}
+  - {x: 7, y: 6}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
@@ -1027,9 +1035,11 @@ EdgeCollider2D:
   m_EdgeRadius: 0
   m_Points:
   - {x: 16, y: 5}
-  - {x: 6, y: 5}
-  - {x: 6, y: 13}
-  - {x: 16, y: 13}
+  - {x: 13, y: 5}
+  - {x: 13, y: 6}
+  - {x: 15, y: 6}
+  - {x: 15, y: 7}
+  - {x: 16, y: 7}
   - {x: 16, y: 5}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}
@@ -1074,6 +1084,10 @@ EdgeCollider2D:
   - {x: 21, y: 5}
   - {x: 21, y: 6}
   - {x: 20, y: 6}
+  - {x: 20, y: 7}
+  - {x: 21, y: 7}
+  - {x: 21, y: 11}
+  - {x: 20, y: 11}
   - {x: 20, y: 12}
   - {x: 21, y: 12}
   - {x: 21, y: 13}
@@ -1120,6 +1134,10 @@ EdgeCollider2D:
   m_Points:
   - {x: 1, y: 12}
   - {x: 2, y: 12}
+  - {x: 2, y: 11}
+  - {x: 1, y: 11}
+  - {x: 1, y: 7}
+  - {x: 2, y: 7}
   - {x: 2, y: 6}
   - {x: 1, y: 6}
   - {x: 1, y: 5}
@@ -1132,6 +1150,98 @@ EdgeCollider2D:
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
 --- !u!68 &7238262743126374075
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5346836194197578711}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: 7, y: 12}
+  - {x: 7, y: 11}
+  - {x: 6, y: 11}
+  - {x: 6, y: 13}
+  - {x: 9, y: 13}
+  - {x: 9, y: 12}
+  - {x: 7, y: 12}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
+--- !u!68 &1802829429576497503
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5346836194197578711}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: 16, y: 11}
+  - {x: 15, y: 11}
+  - {x: 15, y: 12}
+  - {x: 13, y: 12}
+  - {x: 13, y: 13}
+  - {x: 16, y: 13}
+  - {x: 16, y: 11}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
+--- !u!68 &4127291541087578927
 EdgeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1181,7 +1291,7 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
---- !u!68 &1802829429576497503
+--- !u!68 &315380144193420599
 EdgeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1220,6 +1330,10 @@ EdgeCollider2D:
   - {x: 14, y: 15}
   - {x: 13, y: 15}
   - {x: 13, y: 16}
+  - {x: 12, y: 16}
+  - {x: 12, y: 17}
+  - {x: 10, y: 17}
+  - {x: 10, y: 16}
   - {x: 9, y: 16}
   - {x: 9, y: 15}
   - {x: 8, y: 15}
@@ -1233,7 +1347,7 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
---- !u!68 &4127291541087578927
+--- !u!68 &4068568655155205854
 EdgeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

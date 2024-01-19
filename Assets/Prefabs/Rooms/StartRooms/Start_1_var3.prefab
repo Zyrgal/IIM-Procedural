@@ -850,17 +850,21 @@ EdgeCollider2D:
   m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0
   m_Points:
-  - {x: 11, y: 0}
-  - {x: 6, y: 0}
-  - {x: 6, y: 1}
-  - {x: 8, y: 1}
-  - {x: 8, y: 2}
-  - {x: 9, y: 2}
-  - {x: 9, y: 3}
-  - {x: 10, y: 3}
-  - {x: 10, y: 4}
-  - {x: 11, y: 4}
-  - {x: 11, y: 0}
+  - {x: 1, y: 3}
+  - {x: 2, y: 3}
+  - {x: 2, y: 2}
+  - {x: 3, y: 2}
+  - {x: 3, y: 1}
+  - {x: 5, y: 1}
+  - {x: 5, y: 0}
+  - {x: 2, y: 0}
+  - {x: 2, y: 1}
+  - {x: 1, y: 1}
+  - {x: 1, y: 2}
+  - {x: 0, y: 2}
+  - {x: 0, y: 4}
+  - {x: 1, y: 4}
+  - {x: 1, y: 3}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
@@ -900,72 +904,26 @@ EdgeCollider2D:
   m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0
   m_Points:
-  - {x: 1, y: 3}
-  - {x: 2, y: 3}
-  - {x: 2, y: 2}
-  - {x: 3, y: 2}
-  - {x: 3, y: 1}
-  - {x: 5, y: 1}
-  - {x: 5, y: 0}
-  - {x: 0, y: 0}
-  - {x: 0, y: 4}
-  - {x: 1, y: 4}
-  - {x: 1, y: 3}
+  - {x: 11, y: 2}
+  - {x: 10, y: 2}
+  - {x: 10, y: 1}
+  - {x: 9, y: 1}
+  - {x: 9, y: 0}
+  - {x: 6, y: 0}
+  - {x: 6, y: 1}
+  - {x: 8, y: 1}
+  - {x: 8, y: 2}
+  - {x: 9, y: 2}
+  - {x: 9, y: 3}
+  - {x: 10, y: 3}
+  - {x: 10, y: 4}
+  - {x: 11, y: 4}
+  - {x: 11, y: 2}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
 --- !u!68 &792356304479842685
-EdgeCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7366223554274046699}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_EdgeRadius: 0
-  m_Points:
-  - {x: 11, y: 5}
-  - {x: 10, y: 5}
-  - {x: 10, y: 6}
-  - {x: 9, y: 6}
-  - {x: 9, y: 7}
-  - {x: 8, y: 7}
-  - {x: 8, y: 8}
-  - {x: 6, y: 8}
-  - {x: 6, y: 9}
-  - {x: 11, y: 9}
-  - {x: 11, y: 5}
-  m_AdjacentStartPoint: {x: 0, y: 0}
-  m_AdjacentEndPoint: {x: 0, y: 0}
-  m_UseAdjacentStartPoint: 0
-  m_UseAdjacentEndPoint: 0
---- !u!68 &6162806242211286811
 EdgeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1007,10 +965,68 @@ EdgeCollider2D:
   - {x: 1, y: 6}
   - {x: 1, y: 5}
   - {x: 0, y: 5}
-  - {x: 0, y: 9}
+  - {x: 0, y: 7}
+  - {x: 1, y: 7}
+  - {x: 1, y: 8}
+  - {x: 2, y: 8}
+  - {x: 2, y: 9}
   - {x: 5, y: 9}
   - {x: 5, y: 8}
   - {x: 3, y: 8}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
+--- !u!68 &6162806242211286811
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7366223554274046699}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: 9, y: 8}
+  - {x: 10, y: 8}
+  - {x: 10, y: 7}
+  - {x: 11, y: 7}
+  - {x: 11, y: 5}
+  - {x: 10, y: 5}
+  - {x: 10, y: 6}
+  - {x: 9, y: 6}
+  - {x: 9, y: 7}
+  - {x: 8, y: 7}
+  - {x: 8, y: 8}
+  - {x: 6, y: 8}
+  - {x: 6, y: 9}
+  - {x: 9, y: 9}
+  - {x: 9, y: 8}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
