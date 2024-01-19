@@ -1,5 +1,7 @@
 ﻿using CreativeSpore.SuperTilemapEditor;
+using CreativeSpore.SuperTilemapEditor.PathFindingLib;
 using DG.Tweening;
+using DungeonGenerator;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -76,6 +78,7 @@ public class Enemy : MonoBehaviour
     private float lastAttackTime = float.MinValue;
 
     [SerializeField] private bool isTurret;
+    [SerializeField] private bool isBoss;
 
     [Header("Fire")]
     [SerializeField] private int shotCount = 3;
@@ -87,6 +90,7 @@ public class Enemy : MonoBehaviour
     private Sequence sequence;
     [SerializeField] private float fireRate = 2;
     public float FireRate => Mathf.Max(fireRate, shotCount * shotInterval);
+
 
     // State attributes
     private STATE _state = STATE.IDLE;
@@ -420,6 +424,10 @@ public class Enemy : MonoBehaviour
         life -= (attack != null ? attack.damage : 1);
         if (life <= 0)
         {
+            if (isBoss)
+            {
+                DungeonGenerator.DungeonGenerator.Instance.ResetDungeon();
+            }
             SetState(STATE.DEAD);
         }
         else

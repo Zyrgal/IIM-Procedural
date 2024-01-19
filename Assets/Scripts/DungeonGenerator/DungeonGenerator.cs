@@ -12,6 +12,8 @@ namespace DungeonGenerator
 {
     public class DungeonGenerator : MonoBehaviour
     {
+        public static DungeonGenerator Instance = null;
+
         public List<GenerationPreset> generationPresets = new List<GenerationPreset>();
         public int difficulty = 0;
         public int maxAttempts;
@@ -37,8 +39,19 @@ namespace DungeonGenerator
         public List<Room> secretRooms;
         public List<Room> itemRooms;
 
+        private void Awake()
+        {
+            Instance = this;
+        }
+
         private void Start()
         {
+            StartCoroutine(GenerateDungeon());
+        }
+
+        public void ResetDungeon()
+        {
+            difficulty++;
             StartCoroutine(GenerateDungeon());
         }
 

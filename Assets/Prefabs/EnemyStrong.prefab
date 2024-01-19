@@ -306,6 +306,7 @@ MonoBehaviour:
   attackCooldown: 0.2
   orientation: 1
   isTurret: 0
+  isBoss: 1
   shotCount: 8
   shotInterval: 0.1
   timeBeforeThrowAttack: 3
