@@ -266,8 +266,8 @@ MonoBehaviour:
     acceleration: 12
     decceleration: 12
   dashReadyImage: {fileID: 0}
-  dashDuration: 0.1
-  dashForce: 30
+  dashDuration: 0.3
+  dashForce: 12
   baseDamage: 1
   baseRange: 1
   baseEphemeralSpeedDuration: 0
