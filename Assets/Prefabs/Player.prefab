@@ -302,11 +302,11 @@ MonoBehaviour:
   dashForce: 12
   baseDamage: 1
   baseRange: 1
-  baseEphemeralSpeedDuration: 0
+  baseEphemeralSpeedDuration: 5
   attackIncreaseValue: 1
   rangeIncreaseValue: 1
   moveSpeedIncreaseValue: 1
-  accelerationIncreaseValue: 0
+  accelerationIncreaseValue: 1
   permanentMoveSpeedIncreaseValue: 1
   permanentAccelerationIncreaseValue: 1
   dashSpeedIncreaseValue: 1
