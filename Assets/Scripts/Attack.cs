@@ -18,6 +18,7 @@ public class Attack : MonoBehaviour {
     public float knockbackSpeed = 3;
     public float knockbackDuration = 0.5f;
 	public LayerMask destroyOnHit;
+	public bool isBullet = true;
 
 	[SerializeField] private float attackSpeed;
 
@@ -26,10 +27,13 @@ public class Attack : MonoBehaviour {
         if (hasInfiniteLifetime)
 			return;
 
-		if (Player.Instance.transform.rotation.z != 0)
-			transform.Rotate(transform.rotation.x, transform.rotation.y, transform.rotation.z + Time.deltaTime + attackSpeed, Space.Self);
-		else
-            transform.Rotate(transform.rotation.x, transform.rotation.y, transform.rotation.z + Time.deltaTime + attackSpeed + 1f, Space.Self);
+		if (!isBullet)
+		{
+            if (Player.Instance.transform.rotation.z != 0)
+                transform.Rotate(transform.rotation.x, transform.rotation.y, transform.rotation.z + Time.deltaTime + attackSpeed, Space.Self);
+            else
+                transform.Rotate(transform.rotation.x, transform.rotation.y, transform.rotation.z + Time.deltaTime + attackSpeed + 1f, Space.Self);
+        }
 
         lifetime -= Time.deltaTime;
 		if (lifetime <= 0.0f)

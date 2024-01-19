@@ -55,6 +55,7 @@ MonoBehaviour:
   destroyOnHit:
     serializedVersion: 2
     m_Bits: 0
+  isBullet: 1
   attackSpeed: 0
 --- !u!61 &4705603292103821221
 BoxCollider2D:
@@ -210,6 +211,7 @@ MonoBehaviour:
   destroyOnHit:
     serializedVersion: 2
     m_Bits: 0
+  isBullet: 0
   attackSpeed: 15
 --- !u!61 &2185964762067344108
 BoxCollider2D:
