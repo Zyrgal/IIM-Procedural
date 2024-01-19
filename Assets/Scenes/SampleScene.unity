@@ -364,43 +364,37 @@ MonoBehaviour:
   - x: 0
     y: 0
     type: 1
-  - x: 1
-    y: 0
-    type: 2
-  - x: 2
-    y: 0
-    type: 2
-  - x: 3
-    y: 0
-    type: 2
-  - x: 3
+  - x: 0
     y: 1
     type: 2
-  - x: 3
+  - x: 0
     y: 2
     type: 2
-  - x: 3
+  - x: 0
+    y: 3
+    type: 2
+  - x: 1
+    y: 3
+    type: 2
+  - x: 2
     y: 3
     type: 4
-  - x: 2
-    y: 1
+  - x: -1
+    y: 3
     type: 3
-  - x: 1
-    y: -1
-    type: 3
-  - x: 1
-    y: -2
+  - x: -2
+    y: 3
     type: 8
-  - x: 3
-    y: -1
+  - x: 1
+    y: 1
     type: 9
-  - x: 2
-    y: -1
+  - x: -1
+    y: 2
     type: 7
   connections:
   - fromNode:
-      x: 1
-      y: 0
+      x: 0
+      y: 1
       type: 2
     toNode:
       x: 0
@@ -408,121 +402,85 @@ MonoBehaviour:
       type: 1
     type: 1
   - fromNode:
-      x: 2
-      y: 0
-      type: 2
-    toNode:
-      x: 1
-      y: 0
-      type: 2
-    type: 1
-  - fromNode:
-      x: 3
-      y: 0
-      type: 2
-    toNode:
-      x: 2
-      y: 0
-      type: 2
-    type: 1
-  - fromNode:
-      x: 3
-      y: 1
-      type: 2
-    toNode:
-      x: 3
-      y: 0
-      type: 2
-    type: 1
-  - fromNode:
-      x: 3
+      x: 0
       y: 2
       type: 2
     toNode:
-      x: 3
+      x: 0
       y: 1
       type: 2
     type: 1
   - fromNode:
-      x: 3
+      x: 0
+      y: 3
+      type: 2
+    toNode:
+      x: 0
+      y: 2
+      type: 2
+    type: 1
+  - fromNode:
+      x: 1
+      y: 3
+      type: 2
+    toNode:
+      x: 0
+      y: 3
+      type: 2
+    type: 1
+  - fromNode:
+      x: 2
       y: 3
       type: 4
     toNode:
-      x: 3
-      y: 2
+      x: 1
+      y: 3
       type: 2
     type: 2
   - fromNode:
-      x: 2
-      y: 1
+      x: -1
+      y: 3
       type: 3
     toNode:
-      x: 2
-      y: 0
+      x: 0
+      y: 3
       type: 2
     type: 1
   - fromNode:
-      x: 2
-      y: 1
-      type: 3
-    toNode:
-      x: 3
-      y: 1
-      type: 2
-    type: 1
-  - fromNode:
-      x: 1
-      y: -1
-      type: 3
-    toNode:
-      x: 1
-      y: 0
-      type: 2
-    type: 1
-  - fromNode:
-      x: 1
-      y: -2
+      x: -2
+      y: 3
       type: 8
     toNode:
-      x: 1
-      y: -1
+      x: -1
+      y: 3
       type: 3
     type: 1
   - fromNode:
-      x: 3
-      y: -1
+      x: 1
+      y: 1
       type: 9
     toNode:
-      x: 3
-      y: 0
+      x: 0
+      y: 1
       type: 2
     type: 1
   - fromNode:
-      x: 2
-      y: -1
+      x: -1
+      y: 2
       type: 7
     toNode:
-      x: 2
-      y: 0
+      x: 0
+      y: 2
       type: 2
     type: 3
   - fromNode:
-      x: 2
-      y: -1
+      x: -1
+      y: 2
       type: 7
     toNode:
-      x: 1
-      y: -1
+      x: -1
+      y: 3
       type: 3
-    type: 3
-  - fromNode:
-      x: 2
-      y: -1
-      type: 7
-    toNode:
-      x: 3
-      y: -1
-      type: 9
     type: 3
   basicRooms:
   - {fileID: 1133512645011604072, guid: 2f5ead743e10e9740a69284850baa724, type: 3}
@@ -671,7 +629,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -812, y: -206}
+  m_AnchoredPosition: {x: -592.2, y: -463.8}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1237127202
@@ -694,7 +652,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1012,6 +970,76 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1997484764}
     m_Modifications:
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: endTileColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: endTileColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: endTileColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: endTileColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: keyTileColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: keyTileColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: keyTileColor.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: keyTileColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: itemTileColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: itemTileColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: itemTileColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: itemTileColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: startTileColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
+        type: 3}
+      propertyPath: startTileColor.g
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1939166735753671282, guid: 047b3acfaf412a1408bfc228dda06de0,
         type: 3}
       propertyPath: tiles.Array.data[0].image
