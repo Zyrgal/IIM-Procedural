@@ -14,6 +14,7 @@ namespace DungeonGenerator
         public List<Tile> tiles = new List<Tile>();
 
         public GameObject tilePrefab;
+        public RectTransform playerSprite;
 
         public Sprite unexploredTile;
         public Sprite exploredTile;
@@ -45,7 +46,7 @@ namespace DungeonGenerator
             {
                 Vector2 pos = node.Position * tileSize;
                 Vector2 size = tileSize;
-                GameObject tileObject = Instantiate(tilePrefab, transform);
+                GameObject tileObject = Instantiate(tilePrefab, transform.GetChild(0));
                 tileObject.GetComponent<Image>().sprite = unexploredTile;
 
                 switch (node.type)
@@ -97,6 +98,8 @@ namespace DungeonGenerator
                 Tile tile = tiles.Find(e => e.Position == position);
                 tile.explored = true;
                 tile.visible = true;
+
+                playerSprite.localPosition = tile.Position * tileSize + (tile.node.type == NodeType.FourTile ? new Vector2(16, 16) : Vector2.zero);
 
                 tiles.Where(e => e.node.type != NodeType.Secret && Vector3.Distance(e.node.Position, position) == 1).ToList().ForEach(e => e.visible = true);
             }
