@@ -351,10 +351,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generationPresets:
-  - mainPathLength: {x: 5, y: 8}
+  - mainPathLength: {x: 4, y: 5}
+    width: 4
+    height: 4
+  - mainPathLength: {x: 8, y: 10}
+    width: 6
+    height: 6
+  - mainPathLength: {x: 12, y: 14}
     width: 7
     height: 7
-  difficulty: 0
+  - mainPathLength: {x: 16, y: 22}
+    width: 8
+    height: 8
+  difficulty: 3
   maxAttempts: 50
   nodeMaxAttempts: 10
   roomSize: {x: 11, y: 9}

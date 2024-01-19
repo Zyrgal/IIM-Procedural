@@ -1349,7 +1349,9 @@ EdgeCollider2D:
   m_Points:
   - {x: 12, y: 5}
   - {x: 13, y: 5}
-  - {x: 13, y: 2}
+  - {x: 13, y: 4}
+  - {x: 12, y: 4}
+  - {x: 12, y: 2}
   - {x: 15, y: 2}
   - {x: 15, y: 1}
   - {x: 16, y: 1}
@@ -1358,7 +1360,9 @@ EdgeCollider2D:
   - {x: 6, y: 1}
   - {x: 7, y: 1}
   - {x: 7, y: 2}
-  - {x: 9, y: 2}
+  - {x: 10, y: 2}
+  - {x: 10, y: 4}
+  - {x: 9, y: 4}
   - {x: 9, y: 5}
   - {x: 10, y: 5}
   - {x: 10, y: 6}
@@ -1451,58 +1455,6 @@ EdgeCollider2D:
   m_Offset: {x: 0, y: 0}
   m_EdgeRadius: 0
   m_Points:
-  - {x: 18, y: 6}
-  - {x: 17, y: 6}
-  - {x: 17, y: 7}
-  - {x: 16, y: 7}
-  - {x: 16, y: 8}
-  - {x: 15, y: 8}
-  - {x: 15, y: 10}
-  - {x: 16, y: 10}
-  - {x: 16, y: 11}
-  - {x: 17, y: 11}
-  - {x: 17, y: 12}
-  - {x: 18, y: 12}
-  - {x: 18, y: 6}
-  m_AdjacentStartPoint: {x: 0, y: 0}
-  m_AdjacentEndPoint: {x: 0, y: 0}
-  m_UseAdjacentStartPoint: 0
-  m_UseAdjacentEndPoint: 0
---- !u!68 &929738916105898811
-EdgeCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5346836194197578711}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_EdgeRadius: 0
-  m_Points:
   - {x: 12, y: 8}
   - {x: 10, y: 8}
   - {x: 10, y: 10}
@@ -1512,7 +1464,7 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
---- !u!68 &3255326111372191975
+--- !u!68 &929738916105898811
 EdgeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1557,9 +1509,69 @@ EdgeCollider2D:
   - {x: 5, y: 7}
   - {x: 5, y: 6}
   - {x: 4, y: 6}
+  - {x: 4, y: 8}
+  - {x: 5, y: 8}
+  - {x: 5, y: 10}
+  - {x: 4, y: 10}
   - {x: 4, y: 12}
   - {x: 5, y: 12}
   - {x: 5, y: 11}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
+--- !u!68 &3255326111372191975
+EdgeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5346836194197578711}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_EdgeRadius: 0
+  m_Points:
+  - {x: 18, y: 10}
+  - {x: 17, y: 10}
+  - {x: 17, y: 8}
+  - {x: 18, y: 8}
+  - {x: 18, y: 6}
+  - {x: 17, y: 6}
+  - {x: 17, y: 7}
+  - {x: 16, y: 7}
+  - {x: 16, y: 8}
+  - {x: 15, y: 8}
+  - {x: 15, y: 10}
+  - {x: 16, y: 10}
+  - {x: 16, y: 11}
+  - {x: 17, y: 11}
+  - {x: 17, y: 12}
+  - {x: 18, y: 12}
+  - {x: 18, y: 10}
   m_AdjacentStartPoint: {x: 0, y: 0}
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
@@ -1749,14 +1761,18 @@ EdgeCollider2D:
   m_Points:
   - {x: 15, y: 17}
   - {x: 15, y: 16}
-  - {x: 13, y: 16}
+  - {x: 12, y: 16}
+  - {x: 12, y: 14}
+  - {x: 13, y: 14}
   - {x: 13, y: 13}
   - {x: 12, y: 13}
   - {x: 12, y: 12}
   - {x: 10, y: 12}
   - {x: 10, y: 13}
   - {x: 9, y: 13}
-  - {x: 9, y: 16}
+  - {x: 9, y: 14}
+  - {x: 10, y: 14}
+  - {x: 10, y: 16}
   - {x: 7, y: 16}
   - {x: 7, y: 17}
   - {x: 6, y: 17}
