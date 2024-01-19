@@ -19,12 +19,19 @@ public class Attack : MonoBehaviour {
     public float knockbackDuration = 0.5f;
 	public LayerMask destroyOnHit;
 
+	[SerializeField] private float attackSpeed;
+
 	void Update () {
 
         if (hasInfiniteLifetime)
 			return;
 
-		lifetime -= Time.deltaTime;
+		if (Player.Instance.transform.rotation.z != 0)
+			transform.Rotate(transform.rotation.x, transform.rotation.y, transform.rotation.z + Time.deltaTime + attackSpeed, Space.Self);
+		else
+            transform.Rotate(transform.rotation.x, transform.rotation.y, transform.rotation.z + Time.deltaTime + attackSpeed + 1f, Space.Self);
+
+        lifetime -= Time.deltaTime;
 		if (lifetime <= 0.0f)
 		{
 			GameObject.Destroy(gameObject);
