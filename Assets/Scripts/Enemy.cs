@@ -66,7 +66,7 @@ public class Enemy : MonoBehaviour
     // Attack attributes
     [Header("Attack")]
     public GameObject attackPrefab = null;
-    public GameObject attackSpawnPoint = null;
+    public GameObject[] attackSpawnPoint = null;
 	public float attackWarmUp = 0.5f;
 	private float elapsetimeSinceAttackWarmUp;
 	public float attackDistance = 0.5f;
@@ -354,10 +354,16 @@ public class Enemy : MonoBehaviour
 
             // transform used for spawn is attackSpawnPoint.transform if attackSpawnPoint is not null. Else it's transform.
             //Transform spawnTransform = attackSpawnPoint ? attackSpawnPoint.transform : transform;
-            GameObject.Instantiate(attackPrefab, attackSpawnPoint.transform.position, bulletRotation);
+            GameObject.Instantiate(attackPrefab, attackSpawnPoint[0].transform.position, bulletRotation);
         }
         else
-            GameObject.Instantiate(attackPrefab, attackSpawnPoint.transform.position, attackSpawnPoint.transform.rotation);
+        {
+            for (int i = 0; i < attackSpawnPoint.Length; i++)
+            {
+                GameObject.Instantiate(attackPrefab, attackSpawnPoint[i].transform.position, attackSpawnPoint[i].transform.rotation);
+                
+            }
+        }
     }
     private bool ShootAvailable()
     {
@@ -385,11 +391,11 @@ public class Enemy : MonoBehaviour
 
         for (int i = 0; i < shotCount; i++)
         {
-            sequence.AppendCallback(() =>
+            /*sequence.AppendCallback(() =>
             {
                 SpawnAttackPrefab();
-            });
-
+            });*/
+            SpawnAttackPrefab();
             sequence.AppendInterval(shotInterval);
         }
 
