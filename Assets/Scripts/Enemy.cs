@@ -391,11 +391,15 @@ public class Enemy : MonoBehaviour
 
         for (int i = 0; i < shotCount; i++)
         {
-            /*sequence.AppendCallback(() =>
+            if (!isTurret)
             {
+                sequence.AppendCallback(() =>
+                {
+                    SpawnAttackPrefab();
+                });
+            }
+            else
                 SpawnAttackPrefab();
-            });*/
-            SpawnAttackPrefab();
             sequence.AppendInterval(shotInterval);
         }
 
