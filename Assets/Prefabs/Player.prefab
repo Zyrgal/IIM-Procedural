@@ -311,6 +311,9 @@ MonoBehaviour:
   permanentAccelerationIncreaseValue: 1
   dashSpeedIncreaseValue: 1
   dashAccelerationIncreaseValue: 1
+  damageTXT: {fileID: 0}
+  rangeTXT: {fileID: 0}
+  speedTXT: {fileID: 0}
   attackPrefab: {fileID: 2185964762067344080, guid: fedea07bedcd0dc4b8633fc878bfdc59,
     type: 3}
   attackSpawnPoint: {fileID: 1018260239003511184}
@@ -395,4 +398,4 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.11
+  m_Radius: 0.4

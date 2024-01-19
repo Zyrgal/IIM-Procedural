@@ -590,32 +590,37 @@ public class Player : MonoBehaviour
             }
             else
             {
-                if (_state != STATE.DASHING)
-                    return;
 
-                if (bulletComponent.attackData.attackType != AttackType.ABSORBABLE)
-                    return;
-
-                switch (bulletComponent.attackData.attackBonusType)
+                if (_state == STATE.DASHING)
                 {
-                    case AttackBonusType.DAMAGE:
-                        CurrentDamage.AddCustomAlteration(f => f + attackIncreaseValue, 1, "DamageEphemeral");
-                        Destroy(bulletComponent.gameObject);
-                        break;
-                    case AttackBonusType.RANGE:
-                        CurrentRange.AddCustomAlteration(f => f + rangeIncreaseValue, 1, "RangeEphemeral");
-                        Destroy(bulletComponent.gameObject);
-                        break;
-                    case AttackBonusType.MOVESPEED:
-                        CurrentMovespeedMax.AddCustomAlteration(f => f + moveSpeedIncreaseValue, 1, "SpeedEphemeral");
-                        CurrentMoveAcceleration.AddCustomAlteration(f => f + accelerationIncreaseValue, 1, "AccelerationEphemeral");
-                        CurrentDashAcceleration.AddCustomAlteration(f => f + dashSpeedIncreaseValue, 1, "DashAccelerationEphemeral");
-                        CurrentDashSpeedMax.AddCustomAlteration(f => f + dashSpeedIncreaseValue, 1, "DashSpeedEphemeral");
-                        currentEphemeralSpeedDuration = baseEphemeralSpeedDuration;
-                        Destroy(bulletComponent.gameObject);
-                        break;
-                    default:
-                        break;
+                    if (bulletComponent.attackData.attackType == AttackType.ABSORBABLE)
+                    {
+                        switch (bulletComponent.attackData.attackBonusType)
+                        {
+                            case AttackBonusType.DAMAGE:
+                                CurrentDamage.AddCustomAlteration(f => f + attackIncreaseValue, 1, "DamageEphemeral");
+                                Destroy(bulletComponent.gameObject);
+                                break;
+                            case AttackBonusType.RANGE:
+                                CurrentRange.AddCustomAlteration(f => f + rangeIncreaseValue, 1, "RangeEphemeral");
+                                Destroy(bulletComponent.gameObject);
+                                break;
+                            case AttackBonusType.MOVESPEED:
+                                CurrentMovespeedMax.AddCustomAlteration(f => f + moveSpeedIncreaseValue, 1, "SpeedEphemeral");
+                                CurrentMoveAcceleration.AddCustomAlteration(f => f + accelerationIncreaseValue, 1, "AccelerationEphemeral");
+                                CurrentDashAcceleration.AddCustomAlteration(f => f + dashSpeedIncreaseValue, 1, "DashAccelerationEphemeral");
+                                CurrentDashSpeedMax.AddCustomAlteration(f => f + dashSpeedIncreaseValue, 1, "DashSpeedEphemeral");
+                                currentEphemeralSpeedDuration = baseEphemeralSpeedDuration;
+                                Destroy(bulletComponent.gameObject);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+                else
+                {
+                    ApplyHit(attack);
                 }
             }
         }
